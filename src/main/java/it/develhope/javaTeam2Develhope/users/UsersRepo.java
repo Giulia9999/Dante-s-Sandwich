@@ -1,4 +1,4 @@
-package it.develhope.users;
+package it.develhope.javaTeam2Develhope.users;
 
 import java.io.BufferedReader;
 import java.io.IOException;

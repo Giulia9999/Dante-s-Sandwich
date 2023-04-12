@@ -1,4 +1,4 @@
-package it.develhope.games;
+package it.develhope.javaTeam2Develhope.games;
 
 public class GamesController {
 }

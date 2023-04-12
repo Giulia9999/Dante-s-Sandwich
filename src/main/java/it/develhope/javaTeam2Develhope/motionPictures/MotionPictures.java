@@ -1,6 +1,6 @@
-package it.develhope.motionPictures;
+package it.develhope.javaTeam2Develhope.motionPictures;
 
-import it.develhope.books.Books;
+import it.develhope.javaTeam2Develhope.books.Books;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

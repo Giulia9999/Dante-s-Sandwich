@@ -1,4 +1,4 @@
-package it.develhope.userCards;
+package it.develhope.javaTeam2Develhope.userCards;
 
 import java.util.List;
 

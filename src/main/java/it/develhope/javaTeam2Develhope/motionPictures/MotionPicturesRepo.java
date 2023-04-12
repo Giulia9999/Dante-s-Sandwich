@@ -1,4 +1,4 @@
-package it.develhope.motionPictures;
+package it.develhope.javaTeam2Develhope.motionPictures;
 
 import java.util.List;
 

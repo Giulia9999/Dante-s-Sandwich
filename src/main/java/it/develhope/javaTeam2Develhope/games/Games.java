@@ -1,6 +1,7 @@
-package it.develhope.games;
+package it.develhope.javaTeam2Develhope.games;
 
-import it.develhope.books.Books;
+
+import it.develhope.javaTeam2Develhope.books.Books;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

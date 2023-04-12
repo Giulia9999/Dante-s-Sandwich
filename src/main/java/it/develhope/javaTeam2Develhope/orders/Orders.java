@@ -1,4 +1,4 @@
-package it.develhope.orders;
+package it.develhope.javaTeam2Develhope.orders;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

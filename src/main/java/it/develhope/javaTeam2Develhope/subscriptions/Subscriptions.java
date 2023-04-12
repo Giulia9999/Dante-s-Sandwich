@@ -1,4 +1,4 @@
-package it.develhope.subscriptions;
+package it.develhope.javaTeam2Develhope.subscriptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

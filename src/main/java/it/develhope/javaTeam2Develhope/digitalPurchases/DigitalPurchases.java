@@ -1,4 +1,4 @@
-package it.develhope.digitalPurchases;
+package it.develhope.javaTeam2Develhope.digitalPurchases;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
