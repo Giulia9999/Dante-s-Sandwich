@@ -1,8 +1,10 @@
 package it.develhope.javaTeam2Develhope.books;
 
 
-import java.util.List;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
+@Repository
 public class BooksRepo {
 
     private static List<String> bookRow;
