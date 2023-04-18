@@ -15,7 +15,7 @@ public class OrdersRepo {
     /**
      * Initialize connection through constructor
      */
-    public OrdersRepo(){
+   /* public OrdersRepo(){
         try {
             conn = DriverManager.getConnection("jdbc:mysql://localhost/ProjectDatabase?" +
                     "user='root'&password=c620918fazuKl420");
@@ -26,7 +26,7 @@ public class OrdersRepo {
             System.out.println("SQLState: " + ex.getSQLState());
             System.out.println("VendorError: " + ex.getErrorCode());
         }
-    }
+    }*/
 
     /**
      * This method allow to create a new order table record
