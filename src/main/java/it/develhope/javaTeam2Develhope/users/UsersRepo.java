@@ -16,10 +16,10 @@ public class UsersRepo {
         /**
          * Initialize connection through constructor
          */
-        public UsersRepo(){
+       /* public UsersRepo(){
             try {
                 conn = DriverManager.getConnection("jdbc:mysql://localhost/ProjectDatabase?" +
-                        "user='root'&password=c620918fazuKl420");
+                        "user='root'&password=Sql123.");
                 reader = new BufferedReader(new InputStreamReader(System.in));
             } catch (SQLException ex) {
                 ex.printStackTrace();
@@ -27,7 +27,7 @@ public class UsersRepo {
                 System.out.println("SQLState: " + ex.getSQLState());
                 System.out.println("VendorError: " + ex.getErrorCode());
             }
-        }
+        }*/
 
 
         /**
