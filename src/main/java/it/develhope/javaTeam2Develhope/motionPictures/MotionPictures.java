@@ -1,6 +1,7 @@
 package it.develhope.javaTeam2Develhope.motionPictures;
 
 import it.develhope.javaTeam2Develhope.books.Books;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,8 +11,11 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
+@Entity
+@Table
 public class MotionPictures {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String director;
     private String title;
