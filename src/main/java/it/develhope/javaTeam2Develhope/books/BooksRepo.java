@@ -5,10 +5,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 @Repository
-public class BooksRepo {
+public interface BooksRepo {
 
-    private static List<String> bookRow;
-    private static final String fileDB = "book_database.txt";
+    //private static List<String> bookRow;
+    //private static final String fileDB = "book_database.txt";
 
     /*public static void main(String[] args){
 

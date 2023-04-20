@@ -4,8 +4,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 @Repository
-public class GamesRepo {
+public interface GamesRepo {
 
-    List<Games> gamesList;
+
 
 }
