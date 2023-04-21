@@ -4,8 +4,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 @Repository
-public class MotionPicturesRepo {
-
-    private List<MotionPictures> moviesList;
+public interface MotionPicturesRepo {
 
 }
