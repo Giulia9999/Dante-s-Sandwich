@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class JavaTeam2DevelhopeApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(JavaTeam2DevelhopeApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(JavaTeam2DevelhopeApplication.class, args);
+    }
 
 }
