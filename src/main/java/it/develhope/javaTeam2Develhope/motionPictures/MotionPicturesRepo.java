@@ -5,8 +5,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class MotionPicturesRepo {
+public interface MotionPicturesRepo {
 
-    private List<MotionPictures> moviesList;
+   //private List<MotionPictures> moviesList;
 
 }

@@ -5,8 +5,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class UserCardsRepo {
+public interface UserCardsRepo {
 
-    private List<UserCards> userCards;
+    //private List<UserCards> userCards;
 
 }
