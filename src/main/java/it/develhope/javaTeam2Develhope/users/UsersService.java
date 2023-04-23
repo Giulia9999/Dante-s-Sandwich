@@ -6,11 +6,20 @@ import java.io.*;
 import java.sql.*;
 import java.util.List;
 import java.util.Scanner;
+
 @Service
 public class UsersService {
 
-    public static void authorizeSub(){};
-    public static void authorizePay(){};
+    public static void authorizeSub() {
+    }
+
+    ;
+
+    public static void authorizePay() {
+    }
+
+    ;
+
     public static void subscribe() throws SQLException {
         Connection conn = null;
         conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/newdb", "viewer", "**********");
@@ -19,18 +28,49 @@ public class UsersService {
         String query = scanner.nextLine();
         ResultSet rs = statement.executeQuery(query);
         System.out.println("Printing your query...");
-        while (rs.next()){
-        rs = statement.getResultSet();//controllare se getResultSet e rs.GetString non facciano la stessa cosa
-        String queryPrint = rs.getString(query);//vedi sopra
-        System.out.println("Congrats! You're subscribed");}
-    };
-    public static void pay(){};
-    public static void eraseUser(){};
-    public static void addUSer(){};
-    public static void eraseSub(){};
-    public static void finaliseOrder(){};
-    public static void addBook(){};
-    public static void eraseBook(){};
+        while (rs.next()) {
+            rs = statement.getResultSet();//controllare se getResultSet e rs.GetString non facciano la stessa cosa
+            String queryPrint = rs.getString(query);//vedi sopra
+            System.out.println("Congrats! You're subscribed");
+        }
+    }
+
+    ;
+
+    public static void pay() {
+    }
+
+    ;
+
+    public static void eraseUser() {
+    }
+
+    ;
+
+    public static void addUSer() {
+    }
+
+    ;
+
+    public static void eraseSub() {
+    }
+
+    ;
+
+    public static void finaliseOrder() {
+    }
+
+    ;
+
+    public static void addBook() {
+    }
+
+    ;
+
+    public static void eraseBook() {
+    }
+
+    ;
 
     public static void createFile(String fileName, List<String[]> book) {
         File file = new File(fileName + ".txt");
@@ -79,13 +119,16 @@ public class UsersService {
     }*/
 
     public static void display() {
-        try(BufferedReader reader = new BufferedReader(new FileReader("book_database.txt"));){
+        try (BufferedReader reader = new BufferedReader(new FileReader("book_database.txt"));) {
             String bookDB = reader.readLine();
             while (bookDB != null) { //in questo modo legge direttamente il file e non l'array
                 System.out.println(bookDB);
-                bookDB = reader.readLine();}
+                bookDB = reader.readLine();
+            }
         } catch (IOException e) {
-            throw new RuntimeException(e);}}
+            throw new RuntimeException(e);
+        }
+    }
 
 
     public static void erase() throws FileNotFoundException {

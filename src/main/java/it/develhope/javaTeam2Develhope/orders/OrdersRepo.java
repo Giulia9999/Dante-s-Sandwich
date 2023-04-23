@@ -1,4 +1,5 @@
 package it.develhope.javaTeam2Develhope.orders;
+
 import org.springframework.stereotype.Repository;
 
 import java.io.BufferedReader;
@@ -30,10 +31,11 @@ public class OrdersRepo {
 
     /**
      * This method allow to create a new order table record
+     *
      * @param orders An object of type Order that contains the new record
      */
     public void insertOrder(Orders orders) {
-        try{
+        try {
             System.out.println("--------------------INSERISCI ORDINE-----------------------");
             System.out.println("-----------------------------------------------------------");
             System.out.println("Peso:");
@@ -68,7 +70,7 @@ public class OrdersRepo {
             stmt.executeUpdate();
             System.out.println("Ordine creato");
             stmt.close();
-        }catch (SQLException ex) {
+        } catch (SQLException ex) {
             ex.printStackTrace();
             System.out.println("SQLException: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());
@@ -80,6 +82,7 @@ public class OrdersRepo {
 
     /**
      * Update an existing order record in the database
+     *
      * @param orders An object of type Order that contains the updated record
      */
     public void updateOrder(Orders orders) {
@@ -173,6 +176,7 @@ public class OrdersRepo {
 
     /**
      * Get an order record by its ID from the database
+     *
      * @param orders An object of type Order that contains the retrieved record
      * @return it returns the order that corresponds to the order record in the table
      */
@@ -199,12 +203,12 @@ public class OrdersRepo {
                     orders.setDetails(rs.getString("details"));
                     orders.setTotalPrice(rs.getFloat("totalPrice"));
                     orders.setQuantity(rs.getInt("quantity"));
-                }else {
+                } else {
                     System.out.println("Ordine non trovato");
                 }
             }
             stmt.close();
-        }catch (SQLException ex) {
+        } catch (SQLException ex) {
             ex.printStackTrace();
             System.out.println("SQLException: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());

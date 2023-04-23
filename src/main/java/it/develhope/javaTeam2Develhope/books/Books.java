@@ -1,7 +1,6 @@
 package it.develhope.javaTeam2Develhope.books;
 
 
-
 import it.develhope.javaTeam2Develhope.games.Games;
 import it.develhope.javaTeam2Develhope.motionPictures.MotionPictures;
 import jakarta.persistence.*;

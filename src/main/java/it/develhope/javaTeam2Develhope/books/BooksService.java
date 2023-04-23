@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
+
 @Service
 public class BooksService {
     /*public static void add(String fileDB) {
@@ -38,7 +39,7 @@ public class BooksService {
 
     }*/
 
-    private static void createFile(String fileName, List <String[]> book) {
+    private static void createFile(String fileName, List<String[]> book) {
         File file = new File(fileName);
         try (FileWriter writer = new FileWriter(file, true)) {
             for (String[] row : book) {
@@ -51,15 +52,18 @@ public class BooksService {
     }
 
     public static void display(String file) {
-        try(BufferedReader reader = new BufferedReader(new FileReader(file));){
+        try (BufferedReader reader = new BufferedReader(new FileReader(file));) {
             String bookDB = reader.readLine();
             while (bookDB != null) { //in questo modo legge direttamente il file e non l'array
                 System.out.println(bookDB);
-                bookDB = reader.readLine();}
+                bookDB = reader.readLine();
+            }
         } catch (IOException e) {
-            throw new RuntimeException(e);}}
+            throw new RuntimeException(e);
+        }
+    }
 
-    public static void erase(String file){
+    public static void erase(String file) {
         PrintWriter eraser;
         try {
             eraser = new PrintWriter(file);
@@ -69,7 +73,7 @@ public class BooksService {
         eraser.close();
     }
 
-    public static void searching(String fileName, List<String> database){
+    public static void searching(String fileName, List<String> database) {
         Scanner scanner = new Scanner(System.in);
         String search = scanner.nextLine();
         List<String> dataToRead = new ArrayList<>();
