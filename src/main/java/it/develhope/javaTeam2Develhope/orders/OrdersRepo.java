@@ -9,26 +9,10 @@ import java.sql.*;
 import java.time.LocalDate;
 
 @Repository
-public class OrdersRepo {
-    private Connection conn;
-    private BufferedReader reader;
+public interface OrdersRepo {
 
-    /**
-     * Initialize connection through constructor
-     */
-   /* public OrdersRepo(){
-        try {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost/ProjectDatabase?" +
-                    "user='root'&password=c620918fazuKl420");
-            reader = new BufferedReader(new InputStreamReader(System.in));
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
-        }
-    }*/
 
+<<<<<<< HEAD
     /**
      * This method allow to create a new order table record
      *
@@ -218,5 +202,7 @@ public class OrdersRepo {
         }
         return orders;
     }
+=======
+>>>>>>> master
 }
 

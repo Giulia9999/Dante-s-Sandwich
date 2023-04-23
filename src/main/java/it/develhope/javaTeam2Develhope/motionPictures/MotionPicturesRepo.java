@@ -7,6 +7,4 @@ import java.util.List;
 @Repository
 public interface MotionPicturesRepo {
 
-   //private List<MotionPictures> moviesList;
-
 }
