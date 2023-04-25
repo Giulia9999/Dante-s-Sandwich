@@ -20,12 +20,10 @@ public class Books {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-
     private String author;
     private String title;
     private String topic;
     private String publisher;
-
     @Column(unique = true)
     private String ISBN;
     private int year;
