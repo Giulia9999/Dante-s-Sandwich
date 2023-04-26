@@ -17,7 +17,7 @@ public class DigitalPurchases {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     private LocalDate dateOfPurchase;
     private short isGift;

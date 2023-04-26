@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 
 public class Users {
-    private int id;
+    private Long id;
     private UsersTypeEnum type;
     private String name;
     private String surname;

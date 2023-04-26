@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 
 public class UserCards {
-    private int id;
+    private Long id;
     private String cardType;
     private int cardNum;
     private LocalDate cardExpiry;
