@@ -20,12 +20,10 @@ public class Books {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-
     private String author;
     private String title;
     private String topic;
     private String publisher;
-
     @Column(unique = true)
     private String ISBN;
     private int year;
@@ -34,8 +32,16 @@ public class Books {
     private boolean isInStock;
     private String imageCoverFilePath;
     private boolean isEbook;
-    private List<Games> relatedGames;
-    private List<MotionPictures> relatedMovies;
-
-
+    @ManyToMany
+    @JoinTable(
+            name = "book_game",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "game_id"))
+    private List<Games> games;
+    @ManyToMany
+    @JoinTable(
+            name = "book_motionPictures",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "motionPictures_id"))
+    private List<MotionPictures> motionPictures;
 }

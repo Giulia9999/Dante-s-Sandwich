@@ -1,12 +1,9 @@
 package it.develhope.javaTeam2Develhope.games;
-
-
 import it.develhope.javaTeam2Develhope.books.Books;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
 
 @Data
@@ -26,7 +23,6 @@ public class Games {
     private int year;
     private String imageCoverFilePath;
     private String siteLink;
-    private List<Books> relatedBooks;
-
-
+    @ManyToMany(mappedBy = "games")
+    private List<Books> books;
 }

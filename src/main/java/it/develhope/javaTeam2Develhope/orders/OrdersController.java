@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/")
 public class OrdersController {
-    private final OrdersRepo ordersRepo;
+   /* private final OrdersRepo ordersRepo;
 
     @Autowired
     public OrdersController(OrdersRepo ordersRepo) {
         this.ordersRepo = ordersRepo;
-    }
+    }*/
 }
