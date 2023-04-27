@@ -1,5 +1,9 @@
 package it.develhope.javaTeam2Develhope.userCards;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,11 +15,12 @@ import java.time.LocalDate;
 @NoArgsConstructor
 
 public class UserCards {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String cardType;
+    @Column(unique = true)
     private int cardNum;
     private LocalDate cardExpiry;
     private String cardHolderName;
-
-
 }
