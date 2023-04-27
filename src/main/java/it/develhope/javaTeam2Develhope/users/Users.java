@@ -1,10 +1,7 @@
 package it.develhope.javaTeam2Develhope.users;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +11,8 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
+@Entity
+@Table
 public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

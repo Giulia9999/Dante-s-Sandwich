@@ -1,5 +1,6 @@
 package it.develhope.javaTeam2Develhope.books;
 
+import it.develhope.javaTeam2Develhope.InvalidDataException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -25,39 +26,9 @@ public class BooksController {
     private BooksRepo booksRepo;
 
     @GetMapping
-    public ResponseEntity<List<Books>> getAllBooks(@RequestParam(defaultValue = "0") int page,
-                                                   @RequestParam(defaultValue = "10") int size) {
-        Pageable paging = PageRequest.of(page, size);
-
-        Page<Books> booksPage = booksRepo.findAll(paging);
-
-        List<Books> books = booksPage.getContent();
-
-        return ResponseEntity.ok(books);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Books> getBookById(@PathVariable long id) {
-        Optional<Books> optionalBook = booksRepo.findById(id);
-
-        if (optionalBook.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Books book = optionalBook.get();
-
-        return ResponseEntity.ok(book);
-    }
-
-    @PostMapping("/single")
-    public ResponseEntity<Books> addSingleBook(@RequestBody Books book) {
-        Books savedBook = booksRepo.saveAndFlush(book);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedBook);
-    }
-
-    @GetMapping
     public ResponseEntity<Page<Books>> getAllBooks(
+            //Tramite queste requestparam posso prendere tutti i libri che hanno un valore specificato
+            //quindi se scrivo "topic='horror' mi darà tutti i libri di genere horror
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String author,
@@ -101,10 +72,35 @@ public class BooksController {
         }
 
         Pageable paging = PageRequest.of(page, size);
-        Page<Books> booksPage = booksRepo.findAll((Example<Books>) spec, paging);
-
+        Page<Books> booksPage = booksRepo.findAll(spec, paging);
         return ResponseEntity.ok(booksPage);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Books> getBookById(@PathVariable long id) {
+        Optional<Books> optionalBook = booksRepo.findById(id);
+
+        if (optionalBook.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Books book = optionalBook.get();
+
+        return ResponseEntity.ok(book);
+    }
+
+    @PostMapping("/multiple")
+    public ResponseEntity<List<Books>> addMultipleBooks(@RequestBody List<Books> books) {
+        List<Books> savedBooks = booksRepo.saveAllAndFlush(books);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedBooks);
+    }
+
+    @PostMapping("/single")
+    public ResponseEntity<Books> addSingleBook(@RequestBody Books book) {
+        Books savedBook = booksRepo.saveAndFlush(book);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedBook);
+    }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<Books> updateBook(@PathVariable long id, @RequestBody Books book) {
@@ -120,12 +116,18 @@ public class BooksController {
         //da aggiornare. Il metodo getNullPropertyNames che ho creato serve per identificare
         //le proprietà nulle che dovranno essere ignorate dal metodo copyproperties.
         BeanUtils.copyProperties(book, existingBook, getNullPropertyNames(book));
-
+        //in questo modo, non ho bisogno di riportare tutti i valori della classe
+        //nel json, ma solo quelli che voglio modificare
         Books savedBook = booksRepo.save(existingBook);
 
         return ResponseEntity.ok(savedBook);
     }
 
+    /**
+     * This method returns the null properties of the object book that we create
+     * @param source The properties of the updated book
+     * @return an array of all the null properties
+     */
     private String[] getNullPropertyNames(Books source) {
         final BeanWrapper src = new BeanWrapperImpl(source);
         java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
@@ -162,3 +164,5 @@ public class BooksController {
     }
 
 }
+
+//DOCUMENTAZIONE API: https://documenter.getpostman.com/view/26043911/2s93eR5bMe
