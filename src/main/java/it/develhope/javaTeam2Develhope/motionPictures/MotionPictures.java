@@ -16,7 +16,7 @@ import java.util.List;
 public class MotionPictures {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
     private String director;
     private String title;
     private String topic;

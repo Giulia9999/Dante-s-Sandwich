@@ -15,7 +15,7 @@ import java.time.LocalDate;
 public class Subscriptions {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
     private LocalDate dateOfSubscription;
     private boolean isApproved;
     private boolean isCanceled;

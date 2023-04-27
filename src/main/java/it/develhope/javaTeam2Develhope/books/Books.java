@@ -19,7 +19,7 @@ public class Books {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
     private String author;
     private String title;
     private String topic;
