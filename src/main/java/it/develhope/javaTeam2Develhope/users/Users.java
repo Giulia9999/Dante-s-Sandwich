@@ -1,6 +1,7 @@
 package it.develhope.javaTeam2Develhope.users;
 
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,13 +11,18 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
+@Entity
+@Table
 public class Users {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private UsersTypeEnum type;
     private String name;
     private String surname;
+    @Column(unique = true)
     private String username;
+    @Column(unique = true)
     private String email;
     private String passwordSalt;
     private String passwordHash;
