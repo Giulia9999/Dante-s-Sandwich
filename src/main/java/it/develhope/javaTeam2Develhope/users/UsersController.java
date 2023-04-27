@@ -7,10 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/")
 public class UsersController {
-    /*private final UsersRepo usersRepo;
 
-    @Autowired
-    public UsersController (UsersRepo usersRepo){
-        this.usersRepo = usersRepo;
-    }*/
+  @Autowired
+    private UsersRepo usersRepo;
+
 }

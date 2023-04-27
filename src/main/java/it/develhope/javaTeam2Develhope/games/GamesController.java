@@ -7,11 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/")
 public class GamesController {
-    /*private final GamesRepo gamesRepo;
-
     @Autowired
-    public GamesController(GamesRepo gamesRepo) {
-        this.gamesRepo = gamesRepo;
-    }*/
+    private GamesRepo gamesRepo;
 
 }
