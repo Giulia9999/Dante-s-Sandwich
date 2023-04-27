@@ -8,10 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/")
 public class DigitalPurchasesController {
 
-    /*private final DigitalPurchasesRepo digitalPurchasesRepo;
-
     @Autowired
-    public DigitalPurchasesController(DigitalPurchasesRepo digitalPurchasesRepo) {
-        this.digitalPurchasesRepo = digitalPurchasesRepo;
-    }*/
+    private DigitalPurchasesRepo digitalPurchasesRepo;
 }

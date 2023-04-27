@@ -7,11 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/")
 public class BooksController {
-    /*private final BooksRepo booksRepo;*/
 
-    /*@Autowired
-    public BooksController(BooksRepo booksRepo) {
-        this.booksRepo = booksRepo;
-    }*/
+    @Autowired
+    private BooksRepo booksRepo;
 
 }

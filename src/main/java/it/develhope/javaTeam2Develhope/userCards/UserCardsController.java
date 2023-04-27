@@ -7,10 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/")
 public class UserCardsController {
-    /*private final UserCardsRepo userCardsRepo;
 
     @Autowired
-    public UserCardsController(UserCardsRepo userCardsRepo){
-        this.userCardsRepo = userCardsRepo;
-    }*/
+    private UserCardsRepo userCardsRepo;
+
 }
