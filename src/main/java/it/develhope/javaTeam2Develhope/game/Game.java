@@ -23,6 +23,4 @@ public class Game {
     private int year;
     private String imageCoverFilePath;
     private String siteLink;
-    @ManyToMany(mappedBy = "games")
-    private List<Book> books;
 }
