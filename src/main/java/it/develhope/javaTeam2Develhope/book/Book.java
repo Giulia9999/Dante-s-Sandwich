@@ -33,16 +33,4 @@ public class Book {
     private boolean isInStock;
     private String imageCoverFilePath;
     private boolean isEbook;
-    @ManyToMany
-    @JoinTable(
-            name = "book_game",
-            joinColumns = @JoinColumn(name = "book_id"),
-            inverseJoinColumns = @JoinColumn(name = "game_id"))
-    private List<Game> games;
-    @ManyToMany
-    @JoinTable(
-            name = "book_motionPictures",
-            joinColumns = @JoinColumn(name = "book_id"),
-            inverseJoinColumns = @JoinColumn(name = "motionPictures_id"))
-    private List<MotionPicture> motionPictures;
 }

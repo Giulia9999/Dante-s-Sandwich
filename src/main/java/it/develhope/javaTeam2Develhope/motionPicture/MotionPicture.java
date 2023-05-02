@@ -27,8 +27,4 @@ public class MotionPicture {
     private int seasons;
     private String imageCoverFilePath;
     private String siteLink;
-    @ManyToMany(mappedBy = "motionPictures")
-    private List<Book> books;
-
-
 }
