@@ -22,7 +22,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/motion-pictures")
-public class MotionPicturesController {
+public class MotionPictureController {
     @Autowired
     private MotionPictureRepo motionPictureRepo;
 
