@@ -1,6 +1,7 @@
 package it.develhope.javaTeam2Develhope.book;
 
 //import it.develhope.javaTeam2Develhope.InvalidDataException;
+import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
@@ -100,8 +102,21 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedBook);
     }
 
-
     @PutMapping("/{id}")
+    public ResponseEntity<Book> updateBook(@PathVariable Long id, @Valid @RequestBody Book book) {
+        Optional<Book> optionalBook = bookRepo.findById(id);
+
+        if (optionalBook.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        book.setId(id);
+
+        Book updatedBook = bookRepo.save(book);
+        return ResponseEntity.ok(updatedBook);
+    }
+
+    @PatchMapping("/{id}")
     public ResponseEntity<Book> updateBook(@PathVariable long id, @RequestBody Book book) {
         Optional<Book> optionalBook = bookRepo.findById(id);
 
@@ -110,13 +125,8 @@ public class BookController {
         }
 
         Book existingBook = optionalBook.get();
-        //Il metodo "copyProperties(Object source, Object target, String ignoreProperties)"
-        // permette di copiare le proprietà not-null del nuovo oggetto in quello
-        //da aggiornare. Il metodo getNullPropertyNames che ho creato serve per identificare
-        //le proprietà nulle che dovranno essere ignorate dal metodo copyproperties.
+
         BeanUtils.copyProperties(book, existingBook, getNullPropertyNames(book));
-        //in questo modo, non ho bisogno di riportare tutti i valori della classe
-        //nel json, ma solo quelli che voglio modificare
         Book savedBook = bookRepo.save(existingBook);
 
         return ResponseEntity.ok(savedBook);
@@ -148,11 +158,13 @@ public class BookController {
 
         if (optionalBook.isEmpty()) {
             return ResponseEntity.notFound().build();
+
         }
 
         bookRepo.deleteById(id);
 
         return ResponseEntity.noContent().build();
+
     }
 
     @DeleteMapping("/clear")
