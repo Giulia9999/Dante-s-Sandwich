@@ -20,7 +20,7 @@ public class Order {
     private LocalDate dateOfOrder;
     private LocalDate dateOfShipping;
     private LocalDate dateOfArrival;
-    private short isGift;
+    private boolean isGift;
     private String details;
     private float totalPrice;
     private int quantity;

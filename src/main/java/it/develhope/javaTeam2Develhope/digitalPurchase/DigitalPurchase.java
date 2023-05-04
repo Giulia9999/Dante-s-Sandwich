@@ -20,7 +20,7 @@ public class DigitalPurchase {
     private Long id;
 
     private LocalDate dateOfPurchase;
-    private short isGift;
+    private boolean isGift;
     private String details;
     private int quantity;
     private float totalPrice;
