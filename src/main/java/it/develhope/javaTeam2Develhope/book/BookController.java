@@ -163,6 +163,7 @@ public class BookController {
         bookRepo.deleteById(id);
 
         return ResponseEntity.noContent().build();
+
     }
 
     @DeleteMapping("/clear")
