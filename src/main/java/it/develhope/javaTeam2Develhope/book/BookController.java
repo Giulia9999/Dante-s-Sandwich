@@ -158,6 +158,7 @@ public class BookController {
 
         if (optionalBook.isEmpty()) {
             return ResponseEntity.notFound().build();
+
         }
 
         bookRepo.deleteById(id);
