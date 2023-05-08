@@ -13,3 +13,8 @@ spring:
     hibernate:
       ddl_auto: create-drop
 
+
+    email: dantessandwich@gmail.com
+
+    pass:  Dante'sSandwich3@
+
