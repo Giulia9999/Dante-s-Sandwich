@@ -24,6 +24,7 @@ public class Customer {
     private String username;
     @Column(unique = true)
     private String email;
+    private String password;
     private String passwordSalt;
     private String passwordHash;
     private LocalDate birthday;
