@@ -17,6 +17,7 @@ public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Enumerated(EnumType.STRING)
     private CustomerTypeEnum type;
     private String name;
     private String surname;
