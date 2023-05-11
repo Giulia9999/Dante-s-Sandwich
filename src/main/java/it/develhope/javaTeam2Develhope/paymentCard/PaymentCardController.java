@@ -1,5 +1,7 @@
 package it.develhope.javaTeam2Develhope.paymentCard;
 
+import io.micrometer.common.util.StringUtils;
+import it.develhope.javaTeam2Develhope.book.Book;
 import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchase;
 import it.develhope.javaTeam2Develhope.game.Game;
 import it.develhope.javaTeam2Develhope.order.Order;
@@ -23,7 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/paymentCards")
 public class PaymentCardController {
 
     @Autowired
@@ -107,7 +109,7 @@ public class PaymentCardController {
 
         PaymentCard existingPaymentCard = optionalPaymentCard.get();
 
-        BeanUtils.copyProperties(paymentCard, existingPaymentCard, getNullPropertyNames(paymentCard));
+        BeanUtils.copyProperties(paymentCard, existingPaymentCard, getEmptyPropertyNames(paymentCard));
         PaymentCard savedPaymentCard = paymentCardRepo.save(existingPaymentCard);
 
         return ResponseEntity.ok(savedPaymentCard);
@@ -118,14 +120,19 @@ public class PaymentCardController {
      * @param source The properties of the updated book
      * @return an array of all the null properties
      */
-    private String[] getNullPropertyNames(PaymentCard source) {
+    private String[] getEmptyPropertyNames(PaymentCard source) {
         final BeanWrapper src = new BeanWrapperImpl(source);
         java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
 
         Set<String> emptyNames = new HashSet<>();
         for (java.beans.PropertyDescriptor pd : pds) {
             Object srcValue = src.getPropertyValue(pd.getName());
+            if (srcValue instanceof String && StringUtils.isBlank((String) srcValue)) {
+                // Ignore empty string values
+                continue;
+            }
             if (srcValue == null) {
+                // Include null values
                 emptyNames.add(pd.getName());
             }
         }

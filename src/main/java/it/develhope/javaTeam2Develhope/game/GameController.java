@@ -1,5 +1,7 @@
 package it.develhope.javaTeam2Develhope.game;
 
+import io.micrometer.common.util.StringUtils;
+import it.develhope.javaTeam2Develhope.book.Book;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
@@ -102,20 +104,25 @@ public class GameController {
 
         Game existingGame = optionalGame.get();
 
-        BeanUtils.copyProperties(game, existingGame, getNullPropertyNames(game));
+        BeanUtils.copyProperties(game, existingGame, getEmptyPropertyNames(game));
         Game savedGame = gameRepo.save(existingGame);
 
         return ResponseEntity.ok(savedGame);
     }
 
-    private String[] getNullPropertyNames(Game source) {
+    private String[] getEmptyPropertyNames(Game source) {
         final BeanWrapper src = new BeanWrapperImpl(source);
         java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
 
         Set<String> emptyNames = new HashSet<>();
         for (java.beans.PropertyDescriptor pd : pds) {
             Object srcValue = src.getPropertyValue(pd.getName());
+            if (srcValue instanceof String && StringUtils.isBlank((String) srcValue)) {
+                // Ignore empty string values
+                continue;
+            }
             if (srcValue == null) {
+                // Include null values
                 emptyNames.add(pd.getName());
             }
         }

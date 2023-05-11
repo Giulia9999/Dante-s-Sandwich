@@ -1,5 +1,7 @@
 package it.develhope.javaTeam2Develhope.order;
 
+import io.micrometer.common.util.StringUtils;
+import it.develhope.javaTeam2Develhope.book.Book;
 import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchase;
 import it.develhope.javaTeam2Develhope.motionPicture.MotionPicture;
 import jakarta.validation.Valid;
@@ -23,9 +25,9 @@ import java.util.Optional;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/orders")
 public class OrderController {
-   @Autowired
+    @Autowired
     private OrderRepo orderRepo;
 
     @GetMapping
@@ -41,7 +43,7 @@ public class OrderController {
             @RequestParam(required = false) Float totalPrice,
             @RequestParam(required = false) Integer quantity) {
 
-        Specification<DigitalPurchase> spec = Specification.where(null);
+        Specification<Order> spec = Specification.where(null);
 
         if (weight != null) {
             spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("weight"), weight));
@@ -125,7 +127,7 @@ public class OrderController {
 
         Order existingOrder = optionalOrder.get();
 
-        BeanUtils.copyProperties(order, existingOrder, getNullPropertyNames(order));
+        BeanUtils.copyProperties(order, existingOrder, getEmptyPropertyNames(order));
         Order savedOrder = orderRepo.save(existingOrder);
 
         return ResponseEntity.ok(savedOrder);
@@ -136,14 +138,19 @@ public class OrderController {
      * @param source The properties of the updated book
      * @return an array of all the null properties
      */
-    private String[] getNullPropertyNames(Order source) {
+    private String[] getEmptyPropertyNames(Order source) {
         final BeanWrapper src = new BeanWrapperImpl(source);
         java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
 
         Set<String> emptyNames = new HashSet<>();
         for (java.beans.PropertyDescriptor pd : pds) {
             Object srcValue = src.getPropertyValue(pd.getName());
+            if (srcValue instanceof String && StringUtils.isBlank((String) srcValue)) {
+                // Ignore empty string values
+                continue;
+            }
             if (srcValue == null) {
+                // Include null values
                 emptyNames.add(pd.getName());
             }
         }
