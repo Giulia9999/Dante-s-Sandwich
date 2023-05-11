@@ -24,7 +24,7 @@ import java.util.Set;
 @RequestMapping("/motion-pictures")
 public class MotionPictureController {
     @Autowired
-    private MotionPictureRepo motionPictureRepo;
+    private MotionPictureService motionPictureService;
 
     @GetMapping
     public ResponseEntity<Page<MotionPicture>> getAllMotionPictures(
@@ -35,115 +35,49 @@ public class MotionPictureController {
             @RequestParam(required = false) String producer,
             @RequestParam(required = false) Integer year) {
 
-        Specification<MotionPicture> spec = Specification.where(null);
-
-        if (title != null) {
-            spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("title"), title));
-        }
-        if (topic != null) {
-            spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("topic"), topic));
-        }
-        if (producer != null) {
-            spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("producer"), producer));
-        }
-        if (year != null) {
-            spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("year"), year));
-        }
-
-        Pageable paging = PageRequest.of(page, size);
-        Page<MotionPicture> motionPicturesPage = motionPictureRepo.findAll(spec, paging);
+        Page<MotionPicture> motionPicturesPage = motionPictureService.getAllMotionPictures(page, size, title, topic, producer, year);
         return ResponseEntity.ok(motionPicturesPage);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<MotionPicture> getMotionPictureById(@PathVariable long id) {
-        Optional<MotionPicture> optionalMotionPicture = motionPictureRepo.findById(id);
-
-        if (optionalMotionPicture.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        MotionPicture motionPicture = optionalMotionPicture.get();
-
+        MotionPicture motionPicture = motionPictureService.getMotionPictureById(id);
         return ResponseEntity.ok(motionPicture);
     }
 
     @PostMapping("/multiple")
     public ResponseEntity<List<MotionPicture>> addMultipleMotionPictures(@RequestBody List<MotionPicture> motionPictures) {
-        List<MotionPicture> savedMotionPictures = motionPictureRepo.saveAllAndFlush(motionPictures);
+        List<MotionPicture> savedMotionPictures = motionPictureService.addMultipleMotionPictures(motionPictures);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedMotionPictures);
     }
 
     @PostMapping("/single")
     public ResponseEntity<MotionPicture> addSingleMotionPicture(@RequestBody MotionPicture motionPicture) {
-        MotionPicture savedMotionPicture = motionPictureRepo.saveAndFlush(motionPicture);
+        MotionPicture savedMotionPicture = motionPictureService.addSingleMotionPicture(motionPicture);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedMotionPicture);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<MotionPicture> updateMotionPicture(@PathVariable Long id, @Valid @RequestBody MotionPicture motionPicture) {
-        Optional<MotionPicture> optionalMotionPicture = motionPictureRepo.findById(id);
-
-        if (optionalMotionPicture.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        motionPicture.setId(id);
-
-        MotionPicture updatedMotionPicture = motionPictureRepo.save(motionPicture);
+        MotionPicture updatedMotionPicture = motionPictureService.updateMotionPicture(id, motionPicture);
         return ResponseEntity.ok(updatedMotionPicture);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<MotionPicture> updateMotionPicture(@PathVariable long id, @RequestBody MotionPicture motionPicture) {
-        Optional<MotionPicture> optionalMotionPicture = motionPictureRepo.findById(id);
-
-        if (optionalMotionPicture.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        MotionPicture existingMotionPicture = optionalMotionPicture.get();
-
-        BeanUtils.copyProperties(motionPicture, existingMotionPicture, getNullPropertyNames(motionPicture));
-        MotionPicture savedMotionPicture = motionPictureRepo.save(existingMotionPicture);
-
+    public ResponseEntity<MotionPicture> patchMotionPicture(@PathVariable long id, @RequestBody MotionPicture motionPicture) {
+        MotionPicture savedMotionPicture = motionPictureService.patchMotionPicture(id, motionPicture);
         return ResponseEntity.ok(savedMotionPicture);
-    }
-
-    private String[] getNullPropertyNames(MotionPicture source) {
-        final BeanWrapper src = new BeanWrapperImpl(source);
-        java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
-
-        Set<String> emptyNames = new HashSet<>();
-        for (java.beans.PropertyDescriptor pd : pds) {
-            Object srcValue = src.getPropertyValue(pd.getName());
-            if (srcValue == null) {
-                emptyNames.add(pd.getName());
-            }
-        }
-        String[] result = new String[emptyNames.size()];
-        return emptyNames.toArray(result);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMotionPicture(@PathVariable long id) {
-        Optional<MotionPicture> optionalMotionPicture = motionPictureRepo.findById(id);
-
-        if (optionalMotionPicture.isEmpty()) {
-            return ResponseEntity.notFound().build();
-
-        }
-
-        motionPictureRepo.deleteById(id);
-
+        motionPictureService.deleteMotionPicture(id);
         return ResponseEntity.noContent().build();
-
     }
 
     @DeleteMapping("/clear")
     public ResponseEntity<Void> deleteAllMotionPictures() {
-        motionPictureRepo.deleteAll();
-
+        motionPictureService.deleteAllMotionPictures();
         return ResponseEntity.noContent().build();
     }
 }
