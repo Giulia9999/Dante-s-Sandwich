@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/digitalPurchase")
 public class DigitalPurchaseController {
 
     @Autowired
