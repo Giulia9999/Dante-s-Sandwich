@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OrderRepo extends JpaRepository<Order,Long> {
 
-    Page<Order> findAll(Specification<DigitalPurchase> spec, Pageable paging);
+    Page<Order> findAll(Specification<Order> spec, Pageable paging);
 }
 

@@ -9,7 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PaymentCardRepo extends JpaRepository<PaymentCard,Long> {
-    Page<PaymentCard> findAll(Specification<DigitalPurchase> spec, Pageable paging);
-
-
+    Page<PaymentCard> findAll(Specification<PaymentCard> spec, Pageable paging);
 }

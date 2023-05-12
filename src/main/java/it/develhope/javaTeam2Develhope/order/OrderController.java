@@ -1,5 +1,7 @@
 package it.develhope.javaTeam2Develhope.order;
 
+import io.micrometer.common.util.StringUtils;
+import it.develhope.javaTeam2Develhope.book.Book;
 import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchase;
 import it.develhope.javaTeam2Develhope.motionPicture.MotionPicture;
 import jakarta.validation.Valid;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,154 +26,92 @@ import java.util.Optional;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/orders")
 public class OrderController {
-   @Autowired
-    private OrderRepo orderRepo;
+
+    @Autowired
+    private OrderService orderService;
 
     @GetMapping
     public ResponseEntity<Page<Order>> getAllOrders(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Double weight,
-            @RequestParam(required = false) LocalDateTime dateOfOrder,
-            @RequestParam(required = false) LocalDateTime dateOfShipping,
-            @RequestParam(required = false) LocalDateTime dateOfArrival,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateOfOrder,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateOfShipping,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateOfArrival,
             @RequestParam(required = false) Boolean isGift,
             @RequestParam(required = false) String details,
             @RequestParam(required = false) Float totalPrice,
             @RequestParam(required = false) Integer quantity) {
 
-        Specification<DigitalPurchase> spec = Specification.where(null);
-
-        if (weight != null) {
-            spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("weight"), weight));
-        }
-        if (dateOfOrder != null) {
-            spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("dateOfOrder"), dateOfOrder));
-        }
-        if (dateOfShipping != null) {
-            spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("dateOfShipping"), dateOfShipping));
-        }
-        if (dateOfArrival != null) {
-            spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("dateOfArrival"), dateOfArrival));
-        }
-
-        if (isGift != null) {
-            spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("isGift"), isGift));
-        }
-        if (details != null) {
-            spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("details"), details));
-        }
-
-        if (totalPrice != null) {
-            spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("totalPrice"), totalPrice));
-
-        }
-        if (quantity != null) {
-            spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("quantity"), quantity));
-        }
-
-        Pageable paging = PageRequest.of(page, size);
-        Page<Order> orderPage = orderRepo.findAll(spec, paging);
+        Page<Order> orderPage = orderService.getAllOrders(weight, dateOfOrder, dateOfShipping, dateOfArrival, isGift,
+                details, totalPrice, quantity, page, size);
         return ResponseEntity.ok(orderPage);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Order> getOrderById(@PathVariable long id) {
-        Optional<Order> optionalOrder = orderRepo.findById(id);
+        Optional<Order> optionalOrder = orderService.getOrderById(id);
 
         if (optionalOrder.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
         Order order = optionalOrder.get();
-
         return ResponseEntity.ok(order);
     }
 
     @PostMapping("/multiple")
     public ResponseEntity<List<Order>> addMultipleOrders(@RequestBody List<Order> orders) {
-        List<Order> savedOrders = orderRepo.saveAllAndFlush(orders);
+        List<Order> savedOrders = orderService.addMultipleOrders(orders);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedOrders);
     }
 
     @PostMapping("/single")
     public ResponseEntity<Order> addSingleOrder(@RequestBody Order order) {
-        Order savedOrder = orderRepo.saveAndFlush(order);
+        Order savedOrder = orderService.addSingleOrder(order);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedOrder);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Order> updateOrder(@PathVariable Long id, @Valid @RequestBody Order order) {
-        Optional<Order> optionalOrder = orderRepo.findById(id);
+        Optional<Order> optionalOrder = orderService.updateOrder(id, order);
 
         if (optionalOrder.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        order.setId(id);
-
-        Order updatedOrder = orderRepo.save(order);
+        Order updatedOrder = optionalOrder.get();
         return ResponseEntity.ok(updatedOrder);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Order> updateOrder(@PathVariable long id, @RequestBody Order order) {
-        Optional<Order> optionalOrder = orderRepo.findById(id);
+    public ResponseEntity<Order> updateOrderPartially(@PathVariable long id, @RequestBody Order order) {
+        Optional<Order> optionalOrder = orderService.updateOrderPartially(id, order);
 
         if (optionalOrder.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        Order existingOrder = optionalOrder.get();
-
-        BeanUtils.copyProperties(order, existingOrder, getNullPropertyNames(order));
-        Order savedOrder = orderRepo.save(existingOrder);
-
+        Order savedOrder = optionalOrder.get();
         return ResponseEntity.ok(savedOrder);
-    }
-
-    /**
-     * This method returns the null properties of the object book that we create
-     * @param source The properties of the updated book
-     * @return an array of all the null properties
-     */
-    private String[] getNullPropertyNames(Order source) {
-        final BeanWrapper src = new BeanWrapperImpl(source);
-        java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
-
-        Set<String> emptyNames = new HashSet<>();
-        for (java.beans.PropertyDescriptor pd : pds) {
-            Object srcValue = src.getPropertyValue(pd.getName());
-            if (srcValue == null) {
-                emptyNames.add(pd.getName());
-            }
-        }
-        String[] result = new String[emptyNames.size()];
-        return emptyNames.toArray(result);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable long id) {
-        Optional<Order> optionalOrder = orderRepo.findById(id);
+        boolean deleted = orderService.deleteOrder(id);
 
-        if (optionalOrder.isEmpty()) {
+        if (!deleted) {
             return ResponseEntity.notFound().build();
-
         }
 
-        orderRepo.deleteById(id);
-
         return ResponseEntity.noContent().build();
-
     }
 
     @DeleteMapping("/clear")
     public ResponseEntity<Void> deleteAllOrders() {
-        orderRepo.deleteAll();
-
+        orderService.deleteAllOrders();
         return ResponseEntity.noContent().build();
     }
-
 }
