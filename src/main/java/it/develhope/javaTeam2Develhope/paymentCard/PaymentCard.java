@@ -27,4 +27,5 @@ public class PaymentCard {
     private LocalDate cardExpiry;
     @NotBlank(message = "mandatory")
     private String cardHolderName;
+    private double balance;
 }

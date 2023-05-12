@@ -1,5 +1,12 @@
 package it.develhope.javaTeam2Develhope.customer;
 
+import it.develhope.javaTeam2Develhope.book.BookNotFoundException;
+import it.develhope.javaTeam2Develhope.book.BookService;
+import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
+import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCardRepo;
+import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchase;
+import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
+import it.develhope.javaTeam2Develhope.paymentCard.PaymentCardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -11,8 +18,37 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/customer")
 public class CustomerController {
 
-  @Autowired
-  private CustomerService customerService;
+  private final CustomerService customerService;
+  private final CustomerCardRepo customerCardRepo;
+  private final BookService bookService;
+
+  public CustomerController(CustomerService customerService, CustomerCardRepo customerCardRepo,
+                            BookService bookService, PaymentCardService paymentCardService) {
+    this.customerService = customerService;
+    this.customerCardRepo = customerCardRepo;
+    this.bookService = bookService;
+  }
+
+  //AGGIUNGI METODO DI PAGAMENTO
+  @PostMapping("/addPayment/{customerId}")
+  public ResponseEntity<CustomerCard> addPaymentCard(@PathVariable Long customerId, @RequestBody PaymentCard paymentCard) throws Exception, ConflictException {
+    CustomerCard customerCard = customerService.addCustomerPaymentCard(paymentCard, customerId);
+    return ResponseEntity.status(HttpStatus.CREATED).body(customerCard);
+  }
+
+  //RIMUOVI METODO DI PAGAMENTO
+  @DeleteMapping("/removePayment/{customerCardId}")
+  public ResponseEntity.BodyBuilder removePaymentCard(@PathVariable Long customerCardId) throws Exception {
+    customerService.removeCustomerCard(customerCardId);
+    return ResponseEntity.status(HttpStatus.NO_CONTENT);
+  }
+
+  //ACQUISTA LIBRO DIGITALE
+  @PostMapping("/buyDigitalBook/{customerCardId}/{bookId}")
+  public ResponseEntity<DigitalPurchase> buyDigitalBook(@PathVariable Long bookId, @PathVariable Long customerCardId) throws BookNotFoundException, ConflictException {
+    DigitalPurchase digitalPurchase =customerService.buyDigitalBook(customerCardRepo.getReferenceById(customerCardId), bookService.getBookById(bookId));
+    return ResponseEntity.status(HttpStatus.CREATED).body(digitalPurchase);
+  }
 
   @PostMapping("/single")
   public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) throws Exception, ConflictException {

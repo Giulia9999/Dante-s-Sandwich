@@ -1,5 +1,6 @@
-package it.develhope.javaTeam2Develhope.customer;
+package it.develhope.javaTeam2Develhope.customer.customerCard;
 
+import it.develhope.javaTeam2Develhope.customer.Customer;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -16,11 +17,11 @@ public class CustomerCard {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id", unique = true)
     private Customer costumer;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "card_id", referencedColumnName = "id", unique = true)
     private PaymentCard paymentCard;
 }

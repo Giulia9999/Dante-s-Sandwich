@@ -1,12 +1,10 @@
 package it.develhope.javaTeam2Develhope.paymentCard;
 
+import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
+import it.develhope.javaTeam2Develhope.customer.CustomerService;
+import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCardRepo;
 import org.springframework.stereotype.Service;
 import io.micrometer.common.util.StringUtils;
-import it.develhope.javaTeam2Develhope.book.Book;
-import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchase;
-import it.develhope.javaTeam2Develhope.game.Game;
-import it.develhope.javaTeam2Develhope.order.Order;
-import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -24,8 +22,24 @@ import java.util.Set;
 @Service
 public class PaymentCardService {
 
-    @Autowired
-    private PaymentCardRepo paymentCardRepo;
+    private final PaymentCardRepo paymentCardRepo;
+
+    public PaymentCardService(PaymentCardRepo paymentCardRepo) {
+        this.paymentCardRepo = paymentCardRepo;
+    }
+
+    public void validatePaymentCard(PaymentCard paymentCard, double purchaseAmount) {
+        // Check that the payment card is not null
+        if (paymentCard == null) {
+            throw new IllegalArgumentException("Payment card cannot be null.");
+        }
+
+        // Check that the payment card has sufficient balance to cover the purchase amount
+        if (paymentCard.getBalance() < purchaseAmount) {
+            throw new IllegalArgumentException("Insufficient balance on payment card.");
+        }
+    }
+
 
     public Page<PaymentCard> getAllPaymentCards(String cardType, Integer cardNum, LocalDateTime cardExpiry, String cardHolderName, int page, int size) {
         Specification<PaymentCard> spec = Specification.where(null);
