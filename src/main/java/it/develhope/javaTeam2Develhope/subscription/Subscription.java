@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table
+@Table(name = "subscriptions")
 public class Subscription {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -28,6 +28,5 @@ public class Subscription {
     private boolean isRenewed;
     @NotNull
     private float monthlyPrice;
-    @NotBlank(message = "mandatory")
     private String details;
 }

@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table
+@Table(name = "motion_pictures")
 public class MotionPicture {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

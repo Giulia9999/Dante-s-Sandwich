@@ -43,7 +43,6 @@ public class Customer {
     private LocalDate birthday;
     @NotBlank(message = "mandatory")
     private String address;
-    @NotNull
     private LocalDate dateOfSubscription;
     @OneToMany
     private List<DigitalPurchase> purchases;

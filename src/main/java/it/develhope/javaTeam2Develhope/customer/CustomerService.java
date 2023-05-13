@@ -37,47 +37,13 @@ public class CustomerService {
         this.customerCardRepo = customerCardRepo;
     }
 
+    //AGGIUNGI METODO DI PAGAMENTO
     public CustomerCard addCustomerPaymentCard(PaymentCard paymentCard, Long customerId) throws Exception {
         CustomerCard customerCard = new CustomerCard();
-        customerCard.setPaymentCard(paymentCard);
-        customerCard.setCostumer(getCustomerById(customerId));
+        customerCard.addPaymentCard(paymentCard);
         paymentCardService.addSinglePaymentCard(paymentCard);
-        customerCardRepo.save(customerCard);
+        customerCard.setCostumer(getCustomerById(customerId));
         return customerCard;
-    }
-
-    // Method to remove a payment card from the customer's list of cards
-    public void removeCustomerCard(Long customerCard) throws Exception {
-        customerCardRepo.deleteById(customerCard);
-    }
-    // Method to add a payment card to the customer's list of cards
-    public DigitalPurchase buyDigitalBook(CustomerCard customerCard, Book book) throws ConflictException {
-        // Calculate the price of the book
-        float totalPrice = book.getPrice();
-
-        // Validate the payment card
-        paymentCardService.validatePaymentCard(customerCard.getPaymentCard(), totalPrice);
-
-        // Create a new digital purchase object
-        DigitalPurchase digitalPurchase = new DigitalPurchase();
-        digitalPurchase.setCustomer(customerCard.getCostumer());
-        digitalPurchase.setPurchasedBook(book);
-        digitalPurchase.setDateOfPurchase(LocalDate.from(LocalDateTime.now()));
-        digitalPurchase.setDetails("Purchased book: " + book.getTitle());
-        digitalPurchase.setCustomerCard(customerCard);
-        digitalPurchase.setTotalPrice(totalPrice);
-
-        // Save the digital purchase
-        digitalPurchaseService.addSingleDigitalPurchase(digitalPurchase);
-
-        // Deduct the total price from the payment card balance
-        customerCard.getPaymentCard().setBalance(customerCard.getPaymentCard().getBalance() - totalPrice);
-        paymentCardService.updatePaymentCardPartially(customerCard.getPaymentCard().getId(),customerCard.getPaymentCard());
-
-        // Add the digital purchase to the customer's purchase history
-        customerCard.getCostumer().getPurchases().add(digitalPurchase);
-        updateCustomer(customerCard.getCostumer().getId(), customerCard.getCostumer());
-        return digitalPurchase;
     }
 
 

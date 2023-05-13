@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,7 +24,15 @@ public class CustomerCard {
     @JoinColumn(name = "customer_id", referencedColumnName = "id", unique = true)
     private Customer costumer;
 
-    @ManyToOne
+    @ManyToMany
     @JoinColumn(name = "card_id", referencedColumnName = "id", unique = true)
-    private PaymentCard paymentCard;
+    private List<PaymentCard> paymentCards = new ArrayList<>();
+
+    public void addPaymentCard(PaymentCard paymentCard) {
+        paymentCards.add(paymentCard);
+    }
+
+    public void removePaymentCard(PaymentCard paymentCard) {
+        paymentCards.remove(paymentCard);
+    }
 }
