@@ -7,6 +7,7 @@ import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCardRepo;
 import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchase;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCardService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,9 +30,19 @@ public class CustomerController {
   }
 
   //AGGIUNGI METODO DI PAGAMENTO
-  @PostMapping("/addPayment/{customerId}")
-  public ResponseEntity<CustomerCard> addPaymentCard(@PathVariable Long customerId, @RequestBody PaymentCard paymentCard) throws Exception, ConflictException {
-    CustomerCard customerCard = customerService.addCustomerPaymentCard(paymentCard, customerId);
+  @PostMapping("/addFirstPayment/{customerId}")
+  public ResponseEntity<CustomerCard> addFirstPaymentMethod(@PathVariable Long customerId, @RequestBody PaymentCard paymentCard) throws Exception, ConflictException {
+    CustomerCard customerCard = customerService.addFirstPaymentMethod(paymentCard, customerId);
+    customerCardRepo.save(customerCard);
+    return ResponseEntity.status(HttpStatus.CREATED).body(customerCard);
+  }
+
+  @PostMapping("/addPayment/{customerCardId}")
+  public ResponseEntity<CustomerCard> addPaymentMethod(@PathVariable Long customerCardId, @RequestBody PaymentCard paymentCard) throws Exception, ConflictException {
+    CustomerCard customerCard = customerCardRepo.findById(customerCardId).orElseThrow(EntityNotFoundException::new);
+// Call a getter method to initialize the object and force Hibernate to load the actual entity
+    customerCard.getPaymentCards().size();
+    customerCard = customerService.addPaymentMethod(customerCardId, paymentCard);
     customerCardRepo.save(customerCard);
     return ResponseEntity.status(HttpStatus.CREATED).body(customerCard);
   }

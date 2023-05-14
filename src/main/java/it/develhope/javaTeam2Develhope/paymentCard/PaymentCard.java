@@ -20,9 +20,8 @@ public class PaymentCard {
     private Long id;
     @NotBlank(message = "mandatory")
     private String cardType;
-    @Column(unique = true)
     @NotNull
-    private int cardNum;
+    private Long cardNum;
     @NotNull
     private LocalDate cardExpiry;
     @NotBlank(message = "mandatory")

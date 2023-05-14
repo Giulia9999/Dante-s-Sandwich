@@ -38,11 +38,18 @@ public class CustomerService {
     }
 
     //AGGIUNGI METODO DI PAGAMENTO
-    public CustomerCard addCustomerPaymentCard(PaymentCard paymentCard, Long customerId) throws Exception {
+    public CustomerCard addFirstPaymentMethod(PaymentCard paymentCard, Long customerId) throws Exception {
         CustomerCard customerCard = new CustomerCard();
         customerCard.addPaymentCard(paymentCard);
         paymentCardService.addSinglePaymentCard(paymentCard);
         customerCard.setCostumer(getCustomerById(customerId));
+        return customerCard;
+    }
+
+    public CustomerCard addPaymentMethod(Long customerCardId, PaymentCard paymentCard) throws Exception {
+        CustomerCard customerCard = customerCardRepo.getReferenceById(customerCardId);
+        customerCard.addPaymentCard(paymentCard);
+        paymentCardService.addSinglePaymentCard(paymentCard);
         return customerCard;
     }
 
