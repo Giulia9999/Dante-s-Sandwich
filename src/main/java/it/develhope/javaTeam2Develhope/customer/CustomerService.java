@@ -1,7 +1,13 @@
 package it.develhope.javaTeam2Develhope.customer;
 
+import it.develhope.javaTeam2Develhope.book.Book;
+import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
+import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCardRepo;
+import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchase;
+import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchaseService;
+import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
+import it.develhope.javaTeam2Develhope.paymentCard.PaymentCardService;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -12,12 +18,41 @@ import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Optional;
 @Service
 public class CustomerService {
-    @Autowired
-    private CustomerRepo customerRepo;
+    private final CustomerRepo customerRepo;
+    private final PaymentCardService paymentCardService;
+    private final DigitalPurchaseService digitalPurchaseService;
+    private final CustomerCardRepo customerCardRepo;
+
+    public CustomerService(CustomerRepo customerRepo, PaymentCardService paymentCardService,
+                           DigitalPurchaseService digitalPurchaseService, CustomerCardRepo customerCardRepo) {
+        this.customerRepo = customerRepo;
+        this.paymentCardService = paymentCardService;
+        this.digitalPurchaseService = digitalPurchaseService;
+        this.customerCardRepo = customerCardRepo;
+    }
+
+    //AGGIUNGI METODO DI PAGAMENTO
+    public CustomerCard addFirstPaymentMethod(PaymentCard paymentCard, Long customerId) throws Exception {
+        CustomerCard customerCard = new CustomerCard();
+        customerCard.addPaymentCard(paymentCard);
+        paymentCardService.addSinglePaymentCard(paymentCard);
+        customerCard.setCostumer(getCustomerById(customerId));
+        return customerCard;
+    }
+
+    public CustomerCard addPaymentMethod(Long customerCardId, PaymentCard paymentCard) throws Exception {
+        CustomerCard customerCard = customerCardRepo.getReferenceById(customerCardId);
+        customerCard.addPaymentCard(paymentCard);
+        paymentCardService.addSinglePaymentCard(paymentCard);
+        return customerCard;
+    }
+
 
     public Customer createCustomer(Customer customer) throws ConflictException {
         Optional<Customer> existingCustomer = Optional.ofNullable(customerRepo.findByEmail(customer.getEmail()));

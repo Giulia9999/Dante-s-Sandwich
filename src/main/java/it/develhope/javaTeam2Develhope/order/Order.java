@@ -13,22 +13,16 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table
+@Table(name = "orders")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @NotNull
     private double weight;
-    @NotNull
     private LocalDate dateOfOrder;
-    @NotNull
     private LocalDate dateOfShipping;
-    @NotNull
     private LocalDate dateOfArrival;
-    @NotNull
     private boolean isGift;
-    @NotBlank (message = "mandatory")
     private String details;
     @NotNull
     private float totalPrice;

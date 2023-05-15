@@ -13,18 +13,18 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table
+@Table(name = "payment_card")
 public class PaymentCard {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @NotBlank(message = "mandatory")
     private String cardType;
-    @Column(unique = true)
     @NotNull
-    private int cardNum;
+    private Long cardNum;
     @NotNull
     private LocalDate cardExpiry;
     @NotBlank(message = "mandatory")
     private String cardHolderName;
+    private double balance;
 }

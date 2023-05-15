@@ -2,6 +2,7 @@ package it.develhope.javaTeam2Develhope.paymentCard;
 
 import io.micrometer.common.util.StringUtils;
 import it.develhope.javaTeam2Develhope.book.Book;
+import it.develhope.javaTeam2Develhope.customer.CustomerService;
 import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchase;
 import it.develhope.javaTeam2Develhope.game.Game;
 import it.develhope.javaTeam2Develhope.order.Order;
@@ -30,6 +31,8 @@ import java.util.Set;
 public class PaymentCardController {
     @Autowired
     private PaymentCardService paymentCardService;
+    @Autowired
+    CustomerService customerService;
 
     @GetMapping("")
     public ResponseEntity<Page<PaymentCard>> getAllPaymentCards(
@@ -61,7 +64,7 @@ public class PaymentCardController {
     }
 
     @PostMapping("/single")
-    public ResponseEntity<PaymentCard> addSinglePaymentCard(@RequestBody PaymentCard paymentCard) {
+    public ResponseEntity<PaymentCard> addSinglePaymentCard(@RequestBody @Valid PaymentCard paymentCard) {
         PaymentCard savedPaymentCard = paymentCardService.addSinglePaymentCard(paymentCard);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedPaymentCard);
     }

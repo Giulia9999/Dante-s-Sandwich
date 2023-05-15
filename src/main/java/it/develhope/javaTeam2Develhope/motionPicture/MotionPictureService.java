@@ -119,6 +119,4 @@ public class MotionPictureService {
     public void deleteAllMotionPictures() {
         motionPictureRepo.deleteAll();
     }
-
-
 }

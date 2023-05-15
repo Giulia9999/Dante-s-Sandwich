@@ -1,10 +1,14 @@
-package it.develhope.javaTeam2Develhope.customer;
+package it.develhope.javaTeam2Develhope.customer.customerCard;
 
+import it.develhope.javaTeam2Develhope.customer.Customer;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -16,11 +20,19 @@ public class CustomerCard {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id", unique = true)
     private Customer costumer;
 
-    @OneToOne
+    @ManyToMany
     @JoinColumn(name = "card_id", referencedColumnName = "id", unique = true)
-    private PaymentCard paymentCard;
+    private List<PaymentCard> paymentCards = new ArrayList<>();
+
+    public void addPaymentCard(PaymentCard paymentCard) {
+        paymentCards.add(paymentCard);
+    }
+
+    public void removePaymentCard(PaymentCard paymentCard) {
+        paymentCards.remove(paymentCard);
+    }
 }
