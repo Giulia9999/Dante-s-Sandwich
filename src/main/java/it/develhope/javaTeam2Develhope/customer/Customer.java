@@ -52,4 +52,5 @@ public class Customer {
     private List<Order> orders;
     @OneToOne
     private Subscription subscription;
+
 }

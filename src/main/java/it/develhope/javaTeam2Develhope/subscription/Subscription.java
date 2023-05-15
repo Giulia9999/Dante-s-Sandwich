@@ -1,5 +1,6 @@
 package it.develhope.javaTeam2Develhope.subscription;
 
+import it.develhope.javaTeam2Develhope.book.Book;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -8,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -29,4 +31,6 @@ public class Subscription {
     @NotNull
     private float monthlyPrice;
     private String details;
+    @OneToMany
+    private List<Book> bookList;
 }
