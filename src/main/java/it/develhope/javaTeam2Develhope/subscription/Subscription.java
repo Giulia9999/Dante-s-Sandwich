@@ -32,5 +32,5 @@ public class Subscription {
     private float monthlyPrice;
     private String details;
     @OneToMany
-    private List<Book> booksList;
+    private List<Book> books;
 }
