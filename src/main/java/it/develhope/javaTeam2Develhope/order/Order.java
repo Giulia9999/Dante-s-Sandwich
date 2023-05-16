@@ -1,5 +1,6 @@
 package it.develhope.javaTeam2Develhope.order;
 
+import it.develhope.javaTeam2Develhope.book.Book;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -31,4 +32,6 @@ public class Order {
     private int quantity;
     @OneToOne
     private CustomerCard customerCard;
+    @OneToOne
+    private Book book;
 }

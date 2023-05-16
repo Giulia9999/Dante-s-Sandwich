@@ -29,4 +29,6 @@ public class DigitalPurchase {
     private boolean isGift;
     private String details;
     private float totalPrice;
+    @OneToOne
+    private Book book;
 }
