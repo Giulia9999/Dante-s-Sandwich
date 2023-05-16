@@ -56,6 +56,17 @@ public class CustomerService {
         return customerCard;
     }
 
+    public CustomerCard updatePaymentMethod(Long customerCardId,Long paymentCardId, PaymentCard paymentCard) throws Exception {
+        CustomerCard customerCard = customerCardRepo.getReferenceById(customerCardId);
+        for (PaymentCard singleCard: customerCard.getPaymentCards()) {
+            if(singleCard.getId().equals(paymentCardId)){
+
+            }
+        }
+        paymentCardService.addSinglePaymentCard(paymentCard);
+        return customerCard;
+    }
+
 
     public Customer createCustomer(Customer customer) throws ConflictException {
         Optional<Customer> existingCustomer = Optional.ofNullable(customerRepo.findByEmail(customer.getEmail()));
