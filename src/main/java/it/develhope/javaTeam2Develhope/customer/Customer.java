@@ -3,6 +3,8 @@ package it.develhope.javaTeam2Develhope.customer;
 
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
 import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchase;
+import it.develhope.javaTeam2Develhope.order.Order;
+import it.develhope.javaTeam2Develhope.subscription.Subscription;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -46,4 +48,9 @@ public class Customer {
     private LocalDate dateOfSubscription;
     @OneToMany
     private List<DigitalPurchase> purchases;
+    @OneToMany
+    private List<Order> orders;
+    @OneToOne
+    private Subscription subscription;
+
 }

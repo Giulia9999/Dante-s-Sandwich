@@ -21,8 +21,6 @@ public class DigitalPurchase {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @ManyToOne
-    private Customer customer;
     @OneToOne
     private CustomerCard customerCard;
     @OneToOne
