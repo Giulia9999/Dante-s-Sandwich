@@ -42,12 +42,6 @@ public class DigitalPurchaseController {
         return ResponseEntity.ok(digitalPurchase);
     }
 
-    @PostMapping("/multiple")
-    public ResponseEntity<List<DigitalPurchase>> addMultipleDigitalPurchases(@RequestBody List<DigitalPurchase> digitalPurchases) {
-        List<DigitalPurchase> savedDigitalPurchases = digitalPurchaseService.addMultipleDigitalPurchases(digitalPurchases);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedDigitalPurchases);
-    }
-
     @PostMapping("/single")
     public ResponseEntity<DigitalPurchase> addSingleDigitalPurchase(@RequestBody DigitalPurchase digitalPurchase) {
         DigitalPurchase savedDigitalPurchase = digitalPurchaseService.addSingleDigitalPurchase(digitalPurchase);

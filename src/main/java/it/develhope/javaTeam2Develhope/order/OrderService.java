@@ -76,10 +76,6 @@ public class OrderService {
         return orderRepo.findById(id);
     }
 
-    public List<Order> addMultipleOrders(List<Order> orders) {
-        return orderRepo.saveAllAndFlush(orders);
-    }
-
     public Order addSingleOrder(Order order) {
         return orderRepo.saveAndFlush(order);
     }

@@ -45,12 +45,6 @@ public class MotionPictureController {
         return ResponseEntity.ok(motionPicture);
     }
 
-    @PostMapping("/multiple")
-    public ResponseEntity<List<MotionPicture>> addMultipleMotionPictures(@RequestBody List<MotionPicture> motionPictures) {
-        List<MotionPicture> savedMotionPictures = motionPictureService.addMultipleMotionPictures(motionPictures);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedMotionPictures);
-    }
-
     @PostMapping("/single")
     public ResponseEntity<MotionPicture> addSingleMotionPicture(@RequestBody MotionPicture motionPicture) {
         MotionPicture savedMotionPicture = motionPictureService.addSingleMotionPicture(motionPicture);

@@ -73,11 +73,6 @@ public class BookService {
         return optionalBook.get();
     }
 
-    public List<Book> addMultipleBooks(List<Book> books) {
-        List<Book> savedBooks = bookRepo.saveAllAndFlush(books);
-        return savedBooks;
-    }
-
     public Book addSingleBook(Book book) {
         Book savedBook = bookRepo.saveAndFlush(book);
         return savedBook;

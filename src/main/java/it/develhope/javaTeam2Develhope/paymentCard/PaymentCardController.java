@@ -50,17 +50,7 @@ public class PaymentCardController {
     @GetMapping("/{id}")
     public ResponseEntity<PaymentCard> getPaymentCardById(@PathVariable long id) {
         Optional<PaymentCard> optionalPaymentCard = paymentCardService.getPaymentCardById(id);
-        if (optionalPaymentCard.isPresent()) {
-            return ResponseEntity.ok(optionalPaymentCard.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @PostMapping("")
-    public ResponseEntity<List<PaymentCard>> addMultiplePaymentCards(@RequestBody List<PaymentCard> paymentCards) {
-        List<PaymentCard> savedPaymentCards = paymentCardService.addMultiplePaymentCards(paymentCards);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedPaymentCards);
+        return optionalPaymentCard.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/single")

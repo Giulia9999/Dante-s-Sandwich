@@ -52,10 +52,6 @@ public class GameService {
         return optionalGame.orElse(null);
     }
 
-    public List<Game> addMultipleGames(List<Game> games) {
-        return gameRepo.saveAllAndFlush(games);
-    }
-
     public Game addSingleGame(Game game) {
         return gameRepo.saveAndFlush(game);
     }

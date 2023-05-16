@@ -8,6 +8,7 @@ import it.develhope.javaTeam2Develhope.order.Order;
 import it.develhope.javaTeam2Develhope.order.OrderService;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCardService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,6 +42,14 @@ public class CustomerService {
     }
 
     //AGGIUNGI METODO DI PAGAMENTO
+
+    /**
+     *
+     * @param paymentCard The payment card datas to add for the first time
+     * @param customerId The id of the costumer who's adding the poyment
+     * @return The CustomerCard class
+     * @throws Exception Throws exception if the customer does not exist
+     */
     public CustomerCard addFirstPaymentMethod(PaymentCard paymentCard, Long customerId) throws Exception {
         CustomerCard customerCard = new CustomerCard();
         customerCard.addPaymentCard(paymentCard);
@@ -49,10 +58,58 @@ public class CustomerService {
         return customerCard;
     }
 
-    public CustomerCard addPaymentMethod(Long customerCardId, PaymentCard paymentCard) throws Exception {
+    /**
+     *
+     * @param paymentCard The payment card datas to add
+     * @param customerCardId The id of the costumer who's adding the poyment
+     * @return The CustomerCard class, wich handles the relation between customer and card
+     */
+    public CustomerCard addPaymentMethod(Long customerCardId, PaymentCard paymentCard){
         CustomerCard customerCard = customerCardRepo.getReferenceById(customerCardId);
         customerCard.addPaymentCard(paymentCard);
         paymentCardService.addSinglePaymentCard(paymentCard);
+        return customerCard;
+    }
+
+    /**
+     *
+     * @param paymentCard The new payment card datas
+     * @param paymentCardId The payment card to update
+     * @param customerCardId The id of the costumer who's adding the poyment card
+     * @return The updated CustomerCard class
+     */
+    public CustomerCard updatePaymentMethod(Long customerCardId,Long paymentCardId, PaymentCard paymentCard){
+        CustomerCard customerCard = customerCardRepo.getReferenceById(customerCardId);
+        for (PaymentCard singleCard: customerCard.getPaymentCards()) {
+            if(singleCard.getId().equals(paymentCardId)){
+                singleCard.setCardType(paymentCard.getCardType());
+                singleCard.setCardExpiry(paymentCard.getCardExpiry());
+                singleCard.setCardNum(paymentCard.getCardNum());
+                singleCard.setCardHolderName(paymentCard.getCardHolderName());
+                singleCard.setBalance(paymentCard.getBalance());
+                paymentCardService.addSinglePaymentCard(singleCard);
+            }
+        }
+        return customerCard;
+    }
+
+    /**
+     *
+     * @param paymentCardId The id of the paymentCard to be eliminated
+     * @param customerCardId The id of CustomerCard class
+     * @return The updated CustomerCard class
+     */
+    public CustomerCard removePaymentMethod(Long customerCardId, Long paymentCardId) throws Exception {
+        CustomerCard customerCard = customerCardRepo.getReferenceById(customerCardId);
+        for (PaymentCard singleCard : customerCard.getPaymentCards()) {
+            if (singleCard.getId().equals(paymentCardId)) {
+                customerCard.removePaymentCard(singleCard);
+                paymentCardService.deletePaymentCard(singleCard.getId());
+                break;
+            }else {
+                throw new EntityNotFoundException("Payment method does noe exist");
+            }
+        }
         return customerCard;
     }
 

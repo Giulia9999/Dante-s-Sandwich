@@ -54,10 +54,6 @@ public class MotionPictureService {
         return optionalMotionPicture.get();
     }
 
-    public List<MotionPicture> addMultipleMotionPictures(List<MotionPicture> motionPictures) {
-        return motionPictureRepo.saveAllAndFlush(motionPictures);
-    }
-
     public MotionPicture addSingleMotionPicture(MotionPicture motionPicture) {
         return motionPictureRepo.saveAndFlush(motionPicture);
     }
