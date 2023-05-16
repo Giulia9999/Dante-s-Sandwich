@@ -26,7 +26,7 @@ public class CustomerCard {
 
     @ManyToMany
     @JoinColumn(name = "card_id", referencedColumnName = "id", unique = true)
-    private List<PaymentCard> paymentCards = new ArrayList<>(3);
+    private List<PaymentCard> paymentCards = new ArrayList<>();
 
     public void addPaymentCard(PaymentCard paymentCard) {
         paymentCards.add(paymentCard);
