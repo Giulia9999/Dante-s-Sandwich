@@ -62,12 +62,6 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
-    @PostMapping("/multiple")
-    public ResponseEntity<List<Order>> addMultipleOrders(@RequestBody List<Order> orders) {
-        List<Order> savedOrders = orderService.addMultipleOrders(orders);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedOrders);
-    }
-
     @PostMapping("/single")
     public ResponseEntity<Order> addSingleOrder(@RequestBody Order order) {
         Order savedOrder = orderService.addSingleOrder(order);

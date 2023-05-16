@@ -68,12 +68,6 @@ public class GameController {
         return ResponseEntity.ok(game);
     }
 
-    @PostMapping("/multiple")
-    public ResponseEntity<List<Game>> addMultipleGames(@RequestBody List<Game> games) {
-        List<Game> savedGames = gameRepo.saveAllAndFlush(games);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedGames);
-    }
-
     @PostMapping("/single")
     public ResponseEntity<Game> addSingleGame(@RequestBody Game game) {
         Game savedGame = gameRepo.saveAndFlush(game);

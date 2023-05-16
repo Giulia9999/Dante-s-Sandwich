@@ -46,6 +46,26 @@ public class CustomerController {
     customerCardRepo.save(customerCard);
     return ResponseEntity.status(HttpStatus.CREATED).body(customerCard);
   }
+  @PutMapping("/updatePayment/{customerCardId}/{paymentCardId}")
+  public ResponseEntity<CustomerCard> addPaymentMethod(@PathVariable Long customerCardId,@PathVariable Long paymentCardId, @RequestBody PaymentCard paymentCard) throws Exception {
+    CustomerCard customerCard = customerCardRepo.findById(customerCardId).orElseThrow(EntityNotFoundException::new);
+// Call a getter method to initialize the object and force Hibernate to load the actual entity
+    customerCard.getPaymentCards().size();
+    customerCard = customerService.updatePaymentMethod(customerCardId, paymentCardId, paymentCard);
+    customerCardRepo.save(customerCard);
+    return ResponseEntity.status(HttpStatus.CREATED).body(customerCard);
+  }
+
+  @DeleteMapping("/deletePayment/{customerCardId}/{paymentCardId}")
+  public ResponseEntity<CustomerCard> deletePaymentMethod(@PathVariable Long customerCardId,
+                                                          @PathVariable Long paymentCardId) throws Exception {
+    CustomerCard customerCard = customerCardRepo.findById(customerCardId)
+            .orElseThrow(EntityNotFoundException::new);
+    customerCard.getPaymentCards().size();
+    customerCard = customerService.removePaymentMethod(customerCardId, paymentCardId);
+    customerCardRepo.save(customerCard);
+    return ResponseEntity.status(HttpStatus.OK).body(customerCard);
+  }
 
 
   @PostMapping("/single")

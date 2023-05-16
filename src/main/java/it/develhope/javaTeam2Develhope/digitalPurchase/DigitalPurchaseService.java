@@ -62,10 +62,6 @@ public class DigitalPurchaseService {
         return digitalPurchase;
     }
 
-    public List<DigitalPurchase> addMultipleDigitalPurchases(List<DigitalPurchase> digitalPurchases) {
-        List<DigitalPurchase> savedDigitalPurchases = digitalPurchaseRepo.saveAllAndFlush(digitalPurchases);
-        return savedDigitalPurchases;
-    }
 
     public DigitalPurchase addSingleDigitalPurchase(DigitalPurchase digitalPurchase) {
         DigitalPurchase savedDigitalPurchase = digitalPurchaseRepo.saveAndFlush(digitalPurchase);

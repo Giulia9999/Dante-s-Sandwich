@@ -40,12 +40,6 @@ public class BookController {
         return ResponseEntity.ok(book);
     }
 
-    @PostMapping("/multiple")
-    public ResponseEntity<List<Book>> addMultipleBooks(@RequestBody List<Book> books) {
-        List<Book> savedBooks = bookService.addMultipleBooks(books);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedBooks);
-    }
-
     @PostMapping("/single")
     public ResponseEntity<Book> addSingleBook(@RequestBody Book book) {
         Book savedBook = bookService.addSingleBook(book);

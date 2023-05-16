@@ -65,9 +65,6 @@ public class PaymentCardService {
         return paymentCardRepo.findById(id);
     }
 
-    public List<PaymentCard> addMultiplePaymentCards(List<PaymentCard> paymentCards) {
-        return paymentCardRepo.saveAllAndFlush(paymentCards);
-    }
 
     public PaymentCard addSinglePaymentCard(PaymentCard paymentCard) {
         return paymentCardRepo.saveAndFlush(paymentCard);
