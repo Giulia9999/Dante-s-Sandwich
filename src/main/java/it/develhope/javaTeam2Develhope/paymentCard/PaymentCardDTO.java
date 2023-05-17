@@ -7,13 +7,16 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class PaymentCardDTO {
 
     private Long id;
     private String cardType;
-    private LocalDate cardExpiry;
-    private String cardHolderName;
+
+    public PaymentCardDTO(){}
+
+    public PaymentCardDTO(PaymentCard paymentCard){
+        this.id = paymentCard.getId();
+        this.cardType = paymentCard.getCardType();
+    }
 
 }

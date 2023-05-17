@@ -1,7 +1,9 @@
 package it.develhope.javaTeam2Develhope.customer;
 
 import it.develhope.javaTeam2Develhope.book.Book;
+import it.develhope.javaTeam2Develhope.book.BookNotFoundException;
 import it.develhope.javaTeam2Develhope.book.BookRepo;
+import it.develhope.javaTeam2Develhope.book.BookService;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCardRepo;
 import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchaseService;
@@ -33,17 +35,18 @@ public class CustomerService {
     private final DigitalPurchaseService digitalPurchaseService;
     private final CustomerCardRepo customerCardRepo;
     private final OrderService orderService;
-    private final BookRepo bookRepo;
+    private final BookService bookService;
     private final OrderController orderController;
 
     public CustomerService(CustomerRepo customerRepo, PaymentCardService paymentCardService,
-                           DigitalPurchaseService digitalPurchaseService, CustomerCardRepo customerCardRepo, OrderService orderService, BookRepo bookRepo, OrderController orderController) {
+                           DigitalPurchaseService digitalPurchaseService, CustomerCardRepo customerCardRepo,
+                           OrderService orderService, BookService bookService, OrderController orderController) {
         this.customerRepo = customerRepo;
         this.paymentCardService = paymentCardService;
         this.digitalPurchaseService = digitalPurchaseService;
         this.customerCardRepo = customerCardRepo;
         this.orderService = orderService;
-        this.bookRepo = bookRepo;
+        this.bookService = bookService;
         this.orderController = orderController;
     }
 
@@ -107,36 +110,48 @@ public class CustomerService {
      */
     public CustomerCard removePaymentMethod(Long customerCardId, Long paymentCardId) throws Exception {
         CustomerCard customerCard = customerCardRepo.getReferenceById(customerCardId);
+        boolean paymentMethodExists = false;
+
         for (PaymentCard singleCard : customerCard.getPaymentCards()) {
             if (singleCard.getId().equals(paymentCardId)) {
                 customerCard.removePaymentCard(singleCard);
                 paymentCardService.deletePaymentCard(singleCard.getId());
+                paymentMethodExists = true;
                 break;
-            }else {
-                throw new EntityNotFoundException("Payment method does noe exist");
             }
         }
+
+        if (!paymentMethodExists) {
+            throw new EntityNotFoundException("Payment method does not exist");
+        }
+
         return customerCard;
     }
 
     //--------------------------METODI DI ACQUISTO--------------------
-    //metodo per ritornare il prezzo totale degli acquisti effettuati
-    public float orderBook(long customerCardId, long bookId, double weight, boolean isGift, String details, float totalPrice, int quantity){
+    public Order orderBook(Long customerCardId, Long bookId, Boolean isGift){
         Order order = new Order();
-        CustomerCard cc = customerCardRepo.getReferenceById(customerCardId);
-        Book book = bookRepo.getReferenceById(bookId);
-        order.setDateOfOrder(LocalDate.from(LocalDateTime.now()));
-        order.setDateOfShipping(LocalDate.from(order.getDateOfOrder().plusDays(1)));
-        order.setDateOfArrival(LocalDate.from(order.getDateOfShipping().plusDays(2)));
-        order.setGift(order.isGift(isGift));
-        order.setDetails(order.getDetails(details));
-        order.setTotalPrice(order.getTotalPrice(totalPrice));
-        order.setQuantity(order.getQuantity(quantity));
-        orderController.addSingleOrder(order);
-        return order.getTotalPrice(totalPrice);
-
+        float shippingCost = 2.5f;
+        Book book = null;
+        try {
+            book = bookService.getBookById(bookId);
+        } catch (BookNotFoundException e) {
+            e.printStackTrace();
+        }
+        CustomerCard customerCard = customerCardRepo.getReferenceById(customerCardId);
+        order.setCustomerCard(customerCard);
+        order.setBook(book);
+        order.setGift(isGift);
+        order.setDateOfOrder(LocalDateTime.from(LocalDateTime.now()));
+        order.setDateOfShipping(LocalDateTime.now().plusDays(1).toLocalDate());
+        order.setDateOfArrival(order.getDateOfShipping().plusDays(2));
+        order.setDetails("Ordine effettuato");
+        if(book != null){
+            order.setTotalPrice(book.getPrice() + shippingCost);
+            orderService.addSingleOrder(order);
+        }
+        return order;
     }
-
 
 
 
@@ -190,7 +205,7 @@ public class CustomerService {
 
     public boolean deleteCustomer(Long id) {
         Optional<Customer> customerOptional = customerRepo.findById(id);
-        if (!customerOptional.isPresent()) {
+        if (customerOptional.isEmpty()) {
             return false;
         }
         customerRepo.deleteById(id);
