@@ -47,7 +47,7 @@ public class CustomerService {
         this.orderController = orderController;
     }
 
-    //AGGIUNGI METODO DI PAGAMENTO
+    //---------------------METODI GESTIONE CARTE DI PAGAMENTO---------------
 
     /**
      *
@@ -119,7 +119,28 @@ public class CustomerService {
         return customerCard;
     }
 
+    //--------------------------METODI DI ACQUISTO--------------------
+    //metodo per ritornare il prezzo totale degli acquisti effettuati
+    public float orderBook(long customerCardId, long bookId, double weight, boolean isGift, String details, float totalPrice, int quantity){
+        Order order = new Order();
+        CustomerCard cc = customerCardRepo.getReferenceById(customerCardId);
+        Book book = bookRepo.getReferenceById(bookId);
+        order.setDateOfOrder(LocalDate.from(LocalDateTime.now()));
+        order.setDateOfShipping(LocalDate.from(order.getDateOfOrder().plusDays(1)));
+        order.setDateOfArrival(LocalDate.from(order.getDateOfShipping().plusDays(2)));
+        order.setGift(order.isGift(isGift));
+        order.setDetails(order.getDetails(details));
+        order.setTotalPrice(order.getTotalPrice(totalPrice));
+        order.setQuantity(order.getQuantity(quantity));
+        orderController.addSingleOrder(order);
+        return order.getTotalPrice(totalPrice);
 
+    }
+
+
+
+
+    //---------------------METODI CRUD---------------------
     public Customer createCustomer(Customer customer) throws ConflictException {
         Optional<Customer> existingCustomer = Optional.ofNullable(customerRepo.findByEmail(customer.getEmail()));
         if (existingCustomer.isPresent()) {
@@ -202,23 +223,5 @@ public class CustomerService {
         }
     }
 
-
-    //metodo per ritornare il prezzo totale degli acquisti effettuati
-    public float buyOrder(long customerCardId, long bookId, double weight, boolean isGift, String details, float totalPrice, int quantity){
-        Order order = new Order();
-        CustomerCard cc = customerCardRepo.getReferenceById(customerCardId);
-        Book book = bookRepo.getReferenceById(bookId);
-        order.setDateOfOrder(LocalDate.from(LocalDateTime.now()));
-        order.setDateOfShipping(LocalDate.from(order.getDateOfOrder().plusDays(1)));
-        order.setDateOfArrival(LocalDate.from(order.getDateOfShipping().plusDays(2)));
-        order.setGift(order.isGift(isGift));
-        order.setDetails(order.getDetails(details));
-        order.setTotalPrice(order.getTotalPrice(totalPrice));
-        order.setQuantity(order.getQuantity(quantity));
-        orderController.addSingleOrder(order);
-        return order.getTotalPrice(totalPrice);
-
-
-    }
 }
 
