@@ -1,10 +1,9 @@
 package it.develhope.javaTeam2Develhope.customer;
 
-import it.develhope.javaTeam2Develhope.book.BookNotFoundException;
 import it.develhope.javaTeam2Develhope.book.BookService;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCardRepo;
-import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchase;
+import it.develhope.javaTeam2Develhope.order.Order;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCardService;
 import jakarta.persistence.EntityNotFoundException;
@@ -116,6 +115,18 @@ public class CustomerController {
       return ResponseEntity.noContent().build();
     }
     return ResponseEntity.notFound().build();
+  }
+
+  @PostMapping("/buy")
+  public ResponseEntity buyOrder(@RequestParam long customerCardId,
+                                        @RequestParam long bookId,
+                                        @RequestParam double weight,
+                                        @RequestParam boolean isGift,
+                                        @RequestParam String details,
+                                        @RequestParam float totalPrice,
+                                        @RequestParam int quantity){
+    float order = customerService.buyOrder(customerCardId, bookId, weight, isGift, details, totalPrice, quantity);
+    return ResponseEntity.status(HttpStatus.OK).body(order);
   }
 
 }

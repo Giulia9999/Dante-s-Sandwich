@@ -3,7 +3,6 @@ package it.develhope.javaTeam2Develhope.order;
 import it.develhope.javaTeam2Develhope.book.Book;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,4 +33,20 @@ public class Order {
     private CustomerCard customerCard;
     @OneToOne
     private Book book;
+
+    public boolean isGift(boolean isGift) {
+        return isGift;
+    }
+
+    public String getDetails(String details) {
+        return details;
+    }
+
+    public @NotNull float getTotalPrice(float totalPrice) {
+        return totalPrice;
+    }
+
+    public @NotNull int getQuantity(int quantity) {
+        return quantity;
+    }
 }
