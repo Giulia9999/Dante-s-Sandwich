@@ -63,7 +63,7 @@ public class CustomerService {
         CustomerCard customerCard = new CustomerCard();
         customerCard.addPaymentCard(paymentCard);
         paymentCardService.addSinglePaymentCard(paymentCard);
-        customerCard.setCostumer(getCustomerById(customerId));
+        customerCard.setCustomer(getCustomerById(customerId));
         return customerCard;
     }
 

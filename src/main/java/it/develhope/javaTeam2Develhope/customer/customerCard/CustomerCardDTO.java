@@ -21,8 +21,8 @@ public class CustomerCardDTO {
 
     public CustomerCardDTO(CustomerCard customerCard) {
         this.id = customerCard.getId();
-        this.name = customerCard.getCostumer().getName();
-        this.email = customerCard.getCostumer().getEmail();
+        this.name = customerCard.getCustomer().getName();
+        this.email = customerCard.getCustomer().getEmail();
         this.paymentCards = customerCard.getPaymentCards().stream()
                 .map(PaymentCardDTO::new)
                 .collect(Collectors.toList());

@@ -1,6 +1,7 @@
 package it.develhope.javaTeam2Develhope.customer;
 
 import it.develhope.javaTeam2Develhope.book.Book;
+import it.develhope.javaTeam2Develhope.book.BookNotFoundException;
 import it.develhope.javaTeam2Develhope.book.BookService;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCardRepo;
@@ -60,7 +61,7 @@ public class CustomerServiceTests {
     private Order order;
 
     @Before
-    public void setUp() {
+    public void setUp() throws BookNotFoundException {
         paymentCard = new PaymentCard();
         paymentCard.setId(1L);
         paymentCard.setCardNum(12345678923423L);
@@ -118,9 +119,9 @@ public class CustomerServiceTests {
     public void testUpdatePaymentMethod() {
         PaymentCard updatedPaymentCard = new PaymentCard();
         updatedPaymentCard.setId(1L);
-        updatedPaymentCard.setCardNum("987654321");
+        updatedPaymentCard.setCardNum(98765432198L);
         updatedPaymentCard.setCardType("MASTERCARD");
-        updatedPaymentCard.setCardExpiry("01/30");
+        updatedPaymentCard.setCardExpiry(LocalDate.parse("01-04-2020"));
         updatedPaymentCard.setCardHolderName("Test User 2");
         updatedPaymentCard.setBalance(100.0f);
 
@@ -140,15 +141,15 @@ public class CustomerServiceTests {
     @Test
     public void testRemovePaymentMethod() throws Exception {
         CustomerCard result = customerService.removePaymentMethod(customerCard.getId(), paymentCard.getId());
-        Assert.assertNotNull(result);
-        Assert.assertEquals(result.getCustomer().getId(), customer.getId());
-        Assert.assertEquals(result.getPaymentCards().size(), 0);
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(result.getCustomer().getId(), customer.getId());
+        Assertions.assertEquals(result.getPaymentCards().size(), 0);
     }
 
     @Test
     public void testPlaceOrder() throws Exception {
         Mockito.when(orderService.addSingleOrder(order)).thenReturn(order);
-        Order result = customerService.orderBook(customerCard.setId(1L, ord););
+        Order result = customerService.orderBook(customerCard.getId(), book.getId(), true);
         Assertions.assertNotNull(result);
         Assertions.assertEquals(result.getCustomerCard().getId(), customerCard.getId());
         Assertions.assertEquals(result.getBook().getId(), book.getId());
