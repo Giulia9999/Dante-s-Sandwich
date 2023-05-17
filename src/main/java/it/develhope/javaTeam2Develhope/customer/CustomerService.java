@@ -1,10 +1,12 @@
 package it.develhope.javaTeam2Develhope.customer;
 
 import it.develhope.javaTeam2Develhope.book.Book;
+import it.develhope.javaTeam2Develhope.book.BookRepo;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCardRepo;
 import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchaseService;
 import it.develhope.javaTeam2Develhope.order.Order;
+import it.develhope.javaTeam2Develhope.order.OrderController;
 import it.develhope.javaTeam2Develhope.order.OrderService;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCardService;
@@ -13,8 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -22,6 +22,8 @@ import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Optional;
 @Service
@@ -31,14 +33,18 @@ public class CustomerService {
     private final DigitalPurchaseService digitalPurchaseService;
     private final CustomerCardRepo customerCardRepo;
     private final OrderService orderService;
+    private final BookRepo bookRepo;
+    private final OrderController orderController;
 
     public CustomerService(CustomerRepo customerRepo, PaymentCardService paymentCardService,
-                           DigitalPurchaseService digitalPurchaseService, CustomerCardRepo customerCardRepo, OrderService orderService) {
+                           DigitalPurchaseService digitalPurchaseService, CustomerCardRepo customerCardRepo, OrderService orderService, BookRepo bookRepo, OrderController orderController) {
         this.customerRepo = customerRepo;
         this.paymentCardService = paymentCardService;
         this.digitalPurchaseService = digitalPurchaseService;
         this.customerCardRepo = customerCardRepo;
         this.orderService = orderService;
+        this.bookRepo = bookRepo;
+        this.orderController = orderController;
     }
 
     //AGGIUNGI METODO DI PAGAMENTO
@@ -196,12 +202,23 @@ public class CustomerService {
         }
     }
 
-    public Order buyOrder(@RequestBody CustomerCard customerCard, @RequestBody Book book, @RequestParam boolean isGift){
+
+    //metodo per ritornare il prezzo totale degli acquisti effettuati
+    public float buyOrder(long customerCardId, long bookId, double weight, boolean isGift, String details, float totalPrice, int quantity){
         Order order = new Order();
-        order.setCustomerCard(customerCard);
-        order.setBook(book);
-        order.setGift(isGift);
-        orderService.addSingleOrder(order);
-        return order;
+        CustomerCard cc = customerCardRepo.getReferenceById(customerCardId);
+        Book book = bookRepo.getReferenceById(bookId);
+        order.setDateOfOrder(LocalDate.from(LocalDateTime.now()));
+        order.setDateOfShipping(LocalDate.from(order.getDateOfOrder().plusDays(1)));
+        order.setDateOfArrival(LocalDate.from(order.getDateOfShipping().plusDays(2)));
+        order.setGift(order.isGift(isGift));
+        order.setDetails(order.getDetails(details));
+        order.setTotalPrice(order.getTotalPrice(totalPrice));
+        order.setQuantity(order.getQuantity(quantity));
+        orderController.addSingleOrder(order);
+        return order.getTotalPrice(totalPrice);
+
+
     }
 }
+
