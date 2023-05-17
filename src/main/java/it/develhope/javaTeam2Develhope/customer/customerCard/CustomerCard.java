@@ -22,7 +22,7 @@ public class CustomerCard {
 
     @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id", unique = true)
-    private Customer costumer;
+    private Customer customer;
 
     @ManyToMany
     @JoinColumn(name = "card_id", referencedColumnName = "id", unique = true)
