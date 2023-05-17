@@ -35,7 +35,7 @@ public class CustomerController {
     this.bookService = bookService;
   }
 
-  //AGGIUNGI METODO DI PAGAMENTO
+  //----------GESTIONE CARTE DI PAGAMENTO--------------
   @PostMapping("/addFirstPayment/{customerId}")
   public ResponseEntity<CustomerCardDTO> addFirstPaymentMethod(@PathVariable Long customerId, @RequestBody PaymentCard paymentCard) throws Exception, ConflictException {
     CustomerCard customerCard = customerService.addFirstPaymentMethod(paymentCard, customerId);
@@ -72,6 +72,17 @@ public class CustomerController {
     return ResponseEntity.status(HttpStatus.OK).body(customerCardDTO);
   }
 
+  //------------------METODI DI ACQUISTO---------------------
+  @PostMapping("/orderBook/{customerCardId}")
+  public ResponseEntity<OrderDTO> order(@PathVariable Long customerCardId,
+                                        @RequestParam Long bookId,
+                                        @RequestParam Boolean isGift) throws BookNotFoundException {
+    Order order = customerService.orderBook(customerCardId, bookId, isGift);
+    OrderDTO orderDTO = new OrderDTO(order);
+    return ResponseEntity.status(HttpStatus.CREATED).body(orderDTO);
+  }
+
+  //-----------------------METODI CRUD----------------------
 
   @PostMapping("/single")
   public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) throws Exception, ConflictException {
@@ -123,27 +134,7 @@ public class CustomerController {
     return ResponseEntity.notFound().build();
   }
 
-  /*@PostMapping("/buy")
-  public ResponseEntity buyOrder(@RequestParam long customerCardId,
-                                        @RequestParam long bookId,
-                                        @RequestParam double weight,
-                                        @RequestParam boolean isGift,
-                                        @RequestParam String details,
-                                        @RequestParam float totalPrice,
-                                        @RequestParam int quantity){
-    float order = customerService.buyOrder(customerCardId, bookId, weight, isGift, details, totalPrice, quantity);
-    return ResponseEntity.status(HttpStatus.OK).body(order);
-  }*/
 
-  @PostMapping("/orderBook/{customerCardId}")
-  public ResponseEntity<OrderDTO> order(@PathVariable Long customerCardId,
-                                        @RequestParam Long bookId,
-                                        @RequestParam Boolean isGift) throws BookNotFoundException {
-    Order order = customerService.orderBook(customerCardId, bookId, isGift);
-    OrderDTO orderDTO = new OrderDTO(order);
-    return ResponseEntity.status(HttpStatus.CREATED).body(orderDTO);
-  }
-
-  //DOCUMENTAZIONE AGGIORNATA CON US DI DTO:
+  //DOCUMENTAZIONE AGGIORNATA CON USO DI DTO: https://documenter.getpostman.com/view/26043911/2s93eR5bMe
 
 }
