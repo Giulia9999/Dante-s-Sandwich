@@ -1,12 +1,17 @@
 package it.develhope.javaTeam2Develhope.customer;
 
+import it.develhope.javaTeam2Develhope.book.BookNotFoundException;
 import it.develhope.javaTeam2Develhope.book.BookService;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
+import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCardDTO;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCardRepo;
 import it.develhope.javaTeam2Develhope.order.Order;
+import it.develhope.javaTeam2Develhope.order.OrderDTO;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCardService;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/customer")
 public class CustomerController {
 
+  @Autowired
+  EntityManager entityManager;
   private final CustomerService customerService;
   private final CustomerCardRepo customerCardRepo;
   private final BookService bookService;
@@ -28,44 +35,54 @@ public class CustomerController {
     this.bookService = bookService;
   }
 
-  //AGGIUNGI METODO DI PAGAMENTO
+  //----------GESTIONE CARTE DI PAGAMENTO--------------
   @PostMapping("/addFirstPayment/{customerId}")
-  public ResponseEntity<CustomerCard> addFirstPaymentMethod(@PathVariable Long customerId, @RequestBody PaymentCard paymentCard) throws Exception, ConflictException {
+  public ResponseEntity<CustomerCardDTO> addFirstPaymentMethod(@PathVariable Long customerId, @RequestBody PaymentCard paymentCard) throws Exception, ConflictException {
     CustomerCard customerCard = customerService.addFirstPaymentMethod(paymentCard, customerId);
     customerCardRepo.save(customerCard);
-    return ResponseEntity.status(HttpStatus.CREATED).body(customerCard);
+    CustomerCardDTO customerCardDTO = new CustomerCardDTO(customerCard);
+    return ResponseEntity.status(HttpStatus.CREATED).body(customerCardDTO);
   }
 
   @PostMapping("/addPayment/{customerCardId}")
-  public ResponseEntity<CustomerCard> addPaymentMethod(@PathVariable Long customerCardId, @RequestBody PaymentCard paymentCard) throws Exception, ConflictException {
+  public ResponseEntity<CustomerCardDTO> addPaymentMethod(@PathVariable Long customerCardId, @RequestBody PaymentCard paymentCard) throws Exception, ConflictException {
     CustomerCard customerCard = customerCardRepo.findById(customerCardId).orElseThrow(EntityNotFoundException::new);
-// Call a getter method to initialize the object and force Hibernate to load the actual entity
-    customerCard.getPaymentCards().size();
     customerCard = customerService.addPaymentMethod(customerCardId, paymentCard);
     customerCardRepo.save(customerCard);
-    return ResponseEntity.status(HttpStatus.CREATED).body(customerCard);
+    CustomerCardDTO customerCardDTO = new CustomerCardDTO(customerCard);
+    return ResponseEntity.status(HttpStatus.CREATED).body(customerCardDTO);
   }
   @PutMapping("/updatePayment/{customerCardId}/{paymentCardId}")
-  public ResponseEntity<CustomerCard> addPaymentMethod(@PathVariable Long customerCardId,@PathVariable Long paymentCardId, @RequestBody PaymentCard paymentCard) throws Exception {
+  public ResponseEntity<CustomerCardDTO> addPaymentMethod(@PathVariable Long customerCardId, @PathVariable Long paymentCardId, @RequestBody PaymentCard paymentCard) throws Exception {
     CustomerCard customerCard = customerCardRepo.findById(customerCardId).orElseThrow(EntityNotFoundException::new);
 // Call a getter method to initialize the object and force Hibernate to load the actual entity
-    customerCard.getPaymentCards().size();
     customerCard = customerService.updatePaymentMethod(customerCardId, paymentCardId, paymentCard);
     customerCardRepo.save(customerCard);
-    return ResponseEntity.status(HttpStatus.CREATED).body(customerCard);
+    CustomerCardDTO customerCardDTO = new CustomerCardDTO(customerCard);
+    return ResponseEntity.status(HttpStatus.CREATED).body(customerCardDTO);
   }
 
   @DeleteMapping("/deletePayment/{customerCardId}/{paymentCardId}")
-  public ResponseEntity<CustomerCard> deletePaymentMethod(@PathVariable Long customerCardId,
-                                                          @PathVariable Long paymentCardId) throws Exception {
-    CustomerCard customerCard = customerCardRepo.findById(customerCardId)
-            .orElseThrow(EntityNotFoundException::new);
-    customerCard.getPaymentCards().size();
+  public ResponseEntity<CustomerCardDTO> deletePaymentMethod(@PathVariable Long customerCardId,
+                                                             @PathVariable Long paymentCardId) throws Exception {
+    CustomerCard customerCard;
     customerCard = customerService.removePaymentMethod(customerCardId, paymentCardId);
     customerCardRepo.save(customerCard);
-    return ResponseEntity.status(HttpStatus.OK).body(customerCard);
+    CustomerCardDTO customerCardDTO = new CustomerCardDTO(customerCard);
+    return ResponseEntity.status(HttpStatus.OK).body(customerCardDTO);
   }
 
+  //------------------METODI DI ACQUISTO---------------------
+  @PostMapping("/orderBook/{customerCardId}")
+  public ResponseEntity<OrderDTO> order(@PathVariable Long customerCardId,
+                                        @RequestParam Long bookId,
+                                        @RequestParam Boolean isGift) throws BookNotFoundException {
+    Order order = customerService.orderBook(customerCardId, bookId, isGift);
+    OrderDTO orderDTO = new OrderDTO(order);
+    return ResponseEntity.status(HttpStatus.CREATED).body(orderDTO);
+  }
+
+  //-----------------------METODI CRUD----------------------
 
   @PostMapping("/single")
   public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) throws Exception, ConflictException {
@@ -117,16 +134,7 @@ public class CustomerController {
     return ResponseEntity.notFound().build();
   }
 
-  @PostMapping("/buy")
-  public ResponseEntity buyOrder(@RequestParam long customerCardId,
-                                        @RequestParam long bookId,
-                                        @RequestParam double weight,
-                                        @RequestParam boolean isGift,
-                                        @RequestParam String details,
-                                        @RequestParam float totalPrice,
-                                        @RequestParam int quantity){
-    float order = customerService.buyOrder(customerCardId, bookId, weight, isGift, details, totalPrice, quantity);
-    return ResponseEntity.status(HttpStatus.OK).body(order);
-  }
+
+  //DOCUMENTAZIONE AGGIORNATA CON USO DI DTO: https://documenter.getpostman.com/view/26043911/2s93eR5bMe
 
 }

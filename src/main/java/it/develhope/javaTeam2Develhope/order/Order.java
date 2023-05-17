@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -20,33 +21,16 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private double weight;
-    private LocalDate dateOfOrder;
+    private LocalDateTime dateOfOrder;
     private LocalDate dateOfShipping;
     private LocalDate dateOfArrival;
     private boolean isGift;
     private String details;
     @NotNull
     private float totalPrice;
-    @NotNull
-    private int quantity;
     @OneToOne
     private CustomerCard customerCard;
     @OneToOne
     private Book book;
 
-    public boolean isGift(boolean isGift) {
-        return isGift;
-    }
-
-    public String getDetails(String details) {
-        return details;
-    }
-
-    public @NotNull float getTotalPrice(float totalPrice) {
-        return totalPrice;
-    }
-
-    public @NotNull int getQuantity(int quantity) {
-        return quantity;
-    }
 }
