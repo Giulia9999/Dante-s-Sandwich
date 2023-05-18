@@ -22,7 +22,7 @@ public class CustomerCard {
 
     @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id", unique = true)
-    private Customer costumer;
+    private Customer customer;
 
     @ManyToMany
     @JoinColumn(name = "card_id", referencedColumnName = "id", unique = true)
@@ -35,4 +35,5 @@ public class CustomerCard {
     public void removePaymentCard(PaymentCard paymentCard) {
         paymentCards.remove(paymentCard);
     }
+
 }

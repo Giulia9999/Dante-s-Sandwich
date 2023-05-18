@@ -74,8 +74,7 @@ public class BookService {
     }
 
     public Book addSingleBook(Book book) {
-        Book savedBook = bookRepo.saveAndFlush(book);
-        return savedBook;
+        return bookRepo.saveAndFlush(book);
     }
 
     public Book updateBook(Long id, Book book) throws BookNotFoundException {
@@ -111,7 +110,7 @@ public class BookService {
      * @param source The properties of the updated book
      * @return an array of all the null properties
      */
-    private String[] getEmptyPropertyNames(Book source) {
+    protected String[] getEmptyPropertyNames(Book source) {
         final BeanWrapper src = new BeanWrapperImpl(source);
         java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
 
@@ -119,11 +118,7 @@ public class BookService {
         for (java.beans.PropertyDescriptor pd : pds) {
             Object srcValue = src.getPropertyValue(pd.getName());
             if (srcValue instanceof String && StringUtils.isBlank((String) srcValue)) {
-                // Ignore empty string values
-                continue;
-            }
-            if (srcValue == null) {
-                // Include null values
+                // Add empty string values
                 emptyNames.add(pd.getName());
             }
         }
@@ -131,7 +126,7 @@ public class BookService {
         return emptyNames.toArray(result);
     }
 
-    public void deleteBook(long id) throws BookNotFoundException {
+    public void deleteBook(Long id) throws BookNotFoundException {
         Optional<Book> optionalBook = bookRepo.findById(id);
 
         if (optionalBook.isEmpty()) {
