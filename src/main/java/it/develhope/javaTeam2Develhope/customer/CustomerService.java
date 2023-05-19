@@ -13,6 +13,7 @@ import it.develhope.javaTeam2Develhope.order.OrderController;
 import it.develhope.javaTeam2Develhope.order.OrderService;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCardService;
+import it.develhope.javaTeam2Develhope.subscription.Subscription;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
@@ -27,7 +28,9 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 @Service
 public class CustomerService {
@@ -178,21 +181,33 @@ public class CustomerService {
     return digitalPurchase;
     }
 
-    /*
-     @Id
+    //--------------------------------ABBONAMENTO EBOOK------------------------------
+    public Subscription buySubscription(Long customerCardId){
+        Subscription subscription = new Subscription();
+        CustomerCard customerCard = new CustomerCard();
+        subscription.set
+        List<Book> books = new ArrayList<>();
+        subscription.setBooks(books);
+
+    }
+/*
+ @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @OneToOne
-    private CustomerCard customerCard;
-    @OneToOne
-    private Book purchasedBook;
-    private LocalDate dateOfPurchase;
-    private boolean isGift;
+    @NotNull
+    private LocalDate dateOfSubscription;
+    @NotNull
+    private boolean isApproved;
+    @NotNull
+    private boolean isCanceled;
+    @NotNull
+    private boolean isRenewed;
+    @NotNull
+    private float monthlyPrice;
     private String details;
-    private float totalPrice;
-    @OneToOne
-    private Book book;
-     */
+    @OneToMany
+    private List<Book> books;
+ */
 
     //---------------------METODI CRUD---------------------
     public Customer createCustomer(Customer customer) throws ConflictException {
