@@ -2,7 +2,6 @@ package it.develhope.javaTeam2Develhope.customer;
 
 import it.develhope.javaTeam2Develhope.book.Book;
 import it.develhope.javaTeam2Develhope.book.BookNotFoundException;
-import it.develhope.javaTeam2Develhope.book.BookRepo;
 import it.develhope.javaTeam2Develhope.book.BookService;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCardRepo;
@@ -14,6 +13,7 @@ import it.develhope.javaTeam2Develhope.order.OrderService;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCardService;
 import it.develhope.javaTeam2Develhope.subscription.Subscription;
+import it.develhope.javaTeam2Develhope.subscription.SubscriptionService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
@@ -41,10 +41,11 @@ public class CustomerService {
     private final OrderService orderService;
     private final BookService bookService;
     private final OrderController orderController;
+    private final SubscriptionService subscriptionService;
 
     public CustomerService(CustomerRepo customerRepo, PaymentCardService paymentCardService,
                            DigitalPurchaseService digitalPurchaseService, CustomerCardRepo customerCardRepo,
-                           OrderService orderService, BookService bookService, OrderController orderController) {
+                           OrderService orderService, BookService bookService, OrderController orderController, SubscriptionService subscriptionService) {
         this.customerRepo = customerRepo;
         this.paymentCardService = paymentCardService;
         this.digitalPurchaseService = digitalPurchaseService;
@@ -52,6 +53,7 @@ public class CustomerService {
         this.orderService = orderService;
         this.bookService = bookService;
         this.orderController = orderController;
+        this.subscriptionService = subscriptionService;
     }
 
     //---------------------METODI GESTIONE CARTE DI PAGAMENTO---------------
@@ -173,7 +175,7 @@ public class CustomerService {
     digitalPurchase.setPurchasedBook(book);
     digitalPurchase.setGift(isGift);
     digitalPurchase.setDateOfPurchase(LocalDate.from(LocalDateTime.now()));
-    digitalPurchase.setDetails("Ebook acquistato");
+    digitalPurchase.setDetails("E-book acquistato");
     if(book != null){
         digitalPurchase.setTotalPrice(digitalPurchase.getTotalPrice());
         digitalPurchaseService.addSingleDigitalPurchase(digitalPurchase);
@@ -182,32 +184,22 @@ public class CustomerService {
     }
 
     //--------------------------------ABBONAMENTO EBOOK------------------------------
-    public Subscription buySubscription(Long customerCardId){
+    public Subscription buySubscription(Long customerCardId, Boolean isCanceled, Boolean isRenewed){
         Subscription subscription = new Subscription();
         CustomerCard customerCard = new CustomerCard();
-        subscription.set
+        subscription.setCustomerCard(customerCard);
         List<Book> books = new ArrayList<>();
         subscription.setBooks(books);
-
+        subscription.setDateOfSubscription(LocalDate.from(LocalDateTime.now()));
+        subscription.setApproved(true);
+        subscription.setCanceled(isCanceled);
+        subscription.setRenewed(isRenewed);
+        subscription.setMonthlyPrice(5.99f);
+        subscription.setDetails("Abbonamento attivo");
+        subscriptionService.addSingleSubscription(subscription);
+        return subscription;
     }
-/*
- @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    @NotNull
-    private LocalDate dateOfSubscription;
-    @NotNull
-    private boolean isApproved;
-    @NotNull
-    private boolean isCanceled;
-    @NotNull
-    private boolean isRenewed;
-    @NotNull
-    private float monthlyPrice;
-    private String details;
-    @OneToMany
-    private List<Book> books;
- */
+
 
     //---------------------METODI CRUD---------------------
     public Customer createCustomer(Customer customer) throws ConflictException {
