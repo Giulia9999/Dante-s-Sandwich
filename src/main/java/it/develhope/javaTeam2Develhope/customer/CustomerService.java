@@ -6,6 +6,7 @@ import it.develhope.javaTeam2Develhope.book.BookRepo;
 import it.develhope.javaTeam2Develhope.book.BookService;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCardRepo;
+import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchase;
 import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchaseService;
 import it.develhope.javaTeam2Develhope.order.Order;
 import it.develhope.javaTeam2Develhope.order.OrderController;
@@ -129,6 +130,8 @@ public class CustomerService {
     }
 
     //--------------------------METODI DI ACQUISTO--------------------
+
+    //-----------------------------LIBRO FISICO-----------------------
     public Order orderBook(Long customerCardId, Long bookId, Boolean isGift){
         Order order = new Order();
         float shippingCost = 2.5f;
@@ -153,7 +156,43 @@ public class CustomerService {
         return order;
     }
 
+    //--------------------------------LIBRO DIGITALE----------------------------
+    public DigitalPurchase buyDigitalBook(Long customerCardId, Long bookId, Boolean isGift){
+    DigitalPurchase digitalPurchase = new DigitalPurchase();
+    Book book = null;
+    try{
+        book = bookService.getBookById(bookId);
+    } catch (BookNotFoundException e) {
+        e.printStackTrace();
+    }
+    CustomerCard customerCard = customerCardRepo.getReferenceById(customerCardId);
+    digitalPurchase.setCustomerCard(customerCard);
+    digitalPurchase.setPurchasedBook(book);
+    digitalPurchase.setGift(isGift);
+    digitalPurchase.setDateOfPurchase(LocalDate.from(LocalDateTime.now()));
+    digitalPurchase.setDetails("Ebook acquistato");
+    if(book != null){
+        digitalPurchase.setTotalPrice(digitalPurchase.getTotalPrice());
+        digitalPurchaseService.addSingleDigitalPurchase(digitalPurchase);
+        }
+    return digitalPurchase;
+    }
 
+    /*
+     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    @OneToOne
+    private CustomerCard customerCard;
+    @OneToOne
+    private Book purchasedBook;
+    private LocalDate dateOfPurchase;
+    private boolean isGift;
+    private String details;
+    private float totalPrice;
+    @OneToOne
+    private Book book;
+     */
 
     //---------------------METODI CRUD---------------------
     public Customer createCustomer(Customer customer) throws ConflictException {
