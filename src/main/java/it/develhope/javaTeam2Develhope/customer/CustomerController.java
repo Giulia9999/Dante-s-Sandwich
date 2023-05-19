@@ -11,6 +11,8 @@ import it.develhope.javaTeam2Develhope.order.Order;
 import it.develhope.javaTeam2Develhope.order.OrderDTO;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCardService;
+import it.develhope.javaTeam2Develhope.subscription.Subscription;
+import it.develhope.javaTeam2Develhope.subscription.SubscriptionDTO;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +77,8 @@ public class CustomerController {
   }
 
   //------------------METODI DI ACQUISTO---------------------
+
+  //-----------------------LIBRO FISICO----------------------
   @PostMapping("/orderBook/{customerCardId}")
   public ResponseEntity<OrderDTO> order(@PathVariable Long customerCardId,
                                         @RequestParam Long bookId,
@@ -84,6 +88,7 @@ public class CustomerController {
     return ResponseEntity.status(HttpStatus.CREATED).body(orderDTO);
   }
 
+  //-----------------------LIBRO DIGITALE------------------------
   @PostMapping("/orderDigital/{customerCardId}")
   public ResponseEntity<DigitalPurchaseDTO> digitalPurchase(@PathVariable Long customerCardId,
                                                             @RequestParam Long bookId,
@@ -93,6 +98,15 @@ public class CustomerController {
     return ResponseEntity.status(HttpStatus.CREATED).body(digitalPurchaseDTO);
   }
 
+  //----------------------ABBONAMENTO EBOOK--------------------
+  @PostMapping("/subscription/{customerCardId}")
+  public ResponseEntity<SubscriptionDTO> subscription(@PathVariable Long customerCardId,
+                                                      @RequestParam Boolean isCanceled,
+                                                      @RequestParam Boolean isRenewed){
+    Subscription subscription = customerService.buySubscription(customerCardId,isCanceled, isRenewed);
+    SubscriptionDTO subscriptionDTO = new SubscriptionDTO(subscription);
+    return ResponseEntity.status(HttpStatus.CREATED).body(subscriptionDTO);
+  }
 
   //-----------------------METODI CRUD----------------------
 

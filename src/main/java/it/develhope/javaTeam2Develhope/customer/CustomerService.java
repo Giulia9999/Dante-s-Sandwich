@@ -186,7 +186,7 @@ public class CustomerService {
     //--------------------------------ABBONAMENTO EBOOK------------------------------
     public Subscription buySubscription(Long customerCardId, Boolean isCanceled, Boolean isRenewed){
         Subscription subscription = new Subscription();
-        CustomerCard customerCard = new CustomerCard();
+        CustomerCard customerCard = customerCardRepo.getReferenceById(customerCardId);
         subscription.setCustomerCard(customerCard);
         List<Book> books = new ArrayList<>();
         subscription.setBooks(books);

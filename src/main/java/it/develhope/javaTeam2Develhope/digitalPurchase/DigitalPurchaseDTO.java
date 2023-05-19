@@ -1,11 +1,5 @@
 package it.develhope.javaTeam2Develhope.digitalPurchase;
 
-import it.develhope.javaTeam2Develhope.book.Book;
-import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -20,7 +14,7 @@ public class DigitalPurchaseDTO {
     private String details;
     private float totalPrice;
 
-    public  DigitalPurchaseDTO(){}
+    public DigitalPurchaseDTO(){}
 
     public DigitalPurchaseDTO(DigitalPurchase digitalPurchase){
         this.id = digitalPurchase.getId();
