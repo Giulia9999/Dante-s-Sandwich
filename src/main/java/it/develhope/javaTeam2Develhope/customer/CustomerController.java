@@ -5,6 +5,8 @@ import it.develhope.javaTeam2Develhope.book.BookService;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCardDTO;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCardRepo;
+import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchase;
+import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchaseDTO;
 import it.develhope.javaTeam2Develhope.order.Order;
 import it.develhope.javaTeam2Develhope.order.OrderDTO;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
@@ -81,6 +83,16 @@ public class CustomerController {
     OrderDTO orderDTO = new OrderDTO(order);
     return ResponseEntity.status(HttpStatus.CREATED).body(orderDTO);
   }
+
+  @PostMapping("/orderDigital/{customerCardId}")
+  public ResponseEntity<DigitalPurchaseDTO> digitalPurchase(@PathVariable Long customerCardId,
+                                                            @RequestParam Long bookId,
+                                                            @RequestParam Boolean isGift) throws BookNotFoundException{
+    DigitalPurchase digitalPurchase = customerService.buyDigitalBook(customerCardId,bookId,isGift);
+    DigitalPurchaseDTO digitalPurchaseDTO = new DigitalPurchaseDTO(digitalPurchase);
+    return ResponseEntity.status(HttpStatus.CREATED).body(digitalPurchaseDTO);
+  }
+
 
   //-----------------------METODI CRUD----------------------
 
