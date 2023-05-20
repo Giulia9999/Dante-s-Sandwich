@@ -17,7 +17,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 @Service
@@ -99,9 +98,8 @@ public class BookService {
         Book existingBook = optionalBook.get();
 
         BeanUtils.copyProperties(book, existingBook, getEmptyPropertyNames(book));
-        Book savedBook = bookRepo.save(existingBook);
 
-        return savedBook;
+        return bookRepo.save(existingBook);
     }
 
     /**

@@ -86,7 +86,6 @@ public class CustomerServiceTests {
         order = new Order();
         order.setBook(book);
         order.setCustomerCard(customerCard);
-        order.setGift(false);
         order.setTotalPrice(book.getPrice() + 2.5f);
 
         Mockito.when(customerRepo.findByEmail(customer.getEmail())).thenReturn(null);
@@ -147,9 +146,9 @@ public class CustomerServiceTests {
     }
 
     @Test
-    public void testPlaceOrder() throws Exception {
+    public void testPlaceOrder() throws Exception, ConflictException {
         Mockito.when(orderService.addSingleOrder(order)).thenReturn(order);
-        Order result = customerService.orderBook(customerCard.getId(), book.getId(), true);
+        Order result = customerService.orderBook(customerCard.getId(), book.getId());
         Assertions.assertNotNull(result);
         Assertions.assertEquals(result.getCustomerCard().getId(), customerCard.getId());
         Assertions.assertEquals(result.getBook().getId(), book.getId());

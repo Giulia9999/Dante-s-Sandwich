@@ -2,6 +2,7 @@ package it.develhope.javaTeam2Develhope.customer;
 
 import it.develhope.javaTeam2Develhope.book.Book;
 import it.develhope.javaTeam2Develhope.book.BookNotFoundException;
+import it.develhope.javaTeam2Develhope.book.BookRepo;
 import it.develhope.javaTeam2Develhope.book.BookService;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCardRepo;
@@ -28,8 +29,8 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 @Service
@@ -40,20 +41,20 @@ public class CustomerService {
     private final CustomerCardRepo customerCardRepo;
     private final OrderService orderService;
     private final BookService bookService;
-    private final OrderController orderController;
     private final SubscriptionService subscriptionService;
-
+    private final BookRepo bookRepo;
     public CustomerService(CustomerRepo customerRepo, PaymentCardService paymentCardService,
                            DigitalPurchaseService digitalPurchaseService, CustomerCardRepo customerCardRepo,
-                           OrderService orderService, BookService bookService, OrderController orderController, SubscriptionService subscriptionService) {
+                           OrderService orderService, BookService bookService, SubscriptionService subscriptionService,
+                           BookRepo bookRepo) {
         this.customerRepo = customerRepo;
         this.paymentCardService = paymentCardService;
         this.digitalPurchaseService = digitalPurchaseService;
         this.customerCardRepo = customerCardRepo;
         this.orderService = orderService;
         this.bookService = bookService;
-        this.orderController = orderController;
         this.subscriptionService = subscriptionService;
+        this.bookRepo = bookRepo;
     }
 
     //---------------------METODI GESTIONE CARTE DI PAGAMENTO---------------
@@ -137,7 +138,7 @@ public class CustomerService {
     //--------------------------METODI DI ACQUISTO--------------------
 
     //-----------------------------LIBRO FISICO-----------------------
-    public Order orderBook(Long customerCardId, Long bookId, Boolean isGift){
+    public Order orderBook(Long customerCardId, Long bookId) throws ConflictException {
         Order order = new Order();
         float shippingCost = 2.5f;
         Book book = null;
@@ -149,7 +150,6 @@ public class CustomerService {
         CustomerCard customerCard = customerCardRepo.getReferenceById(customerCardId);
         order.setCustomerCard(customerCard);
         order.setBook(book);
-        order.setGift(isGift);
         order.setDateOfOrder(LocalDateTime.from(LocalDateTime.now()));
         order.setDateOfShipping(LocalDateTime.now().plusDays(1).toLocalDate());
         order.setDateOfArrival(order.getDateOfShipping().plusDays(2));
@@ -162,7 +162,7 @@ public class CustomerService {
     }
 
     //--------------------------------LIBRO DIGITALE----------------------------
-    public DigitalPurchase buyDigitalBook(Long customerCardId, Long bookId, Boolean isGift){
+    public DigitalPurchase buyDigitalBook(Long customerCardId, Long bookId) throws ConflictException {
     DigitalPurchase digitalPurchase = new DigitalPurchase();
     Book book = null;
     try{
@@ -173,33 +173,48 @@ public class CustomerService {
     CustomerCard customerCard = customerCardRepo.getReferenceById(customerCardId);
     digitalPurchase.setCustomerCard(customerCard);
     digitalPurchase.setPurchasedBook(book);
-    digitalPurchase.setGift(isGift);
-    digitalPurchase.setDateOfPurchase(LocalDate.from(LocalDateTime.now()));
+    digitalPurchase.setDateOfPurchase(LocalDateTime.from(LocalDateTime.now()));
     digitalPurchase.setDetails("E-book acquistato");
     if(book != null){
-        digitalPurchase.setTotalPrice(digitalPurchase.getTotalPrice());
+        digitalPurchase.setTotalPrice(book.getPrice());
         digitalPurchaseService.addSingleDigitalPurchase(digitalPurchase);
-        }
+    }
     return digitalPurchase;
     }
 
     //--------------------------------ABBONAMENTO EBOOK------------------------------
-    public Subscription buySubscription(Long customerCardId, Boolean isCanceled, Boolean isRenewed){
+    public Subscription getSubscription(Long customerCardId, Boolean isCanceled, Boolean isRenewed) throws ConflictException {
         Subscription subscription = new Subscription();
         CustomerCard customerCard = customerCardRepo.getReferenceById(customerCardId);
         subscription.setCustomerCard(customerCard);
-        List<Book> books = new ArrayList<>();
+        List<Book> books = bookRepo.findAll();
         subscription.setBooks(books);
         subscription.setDateOfSubscription(LocalDate.from(LocalDateTime.now()));
         subscription.setApproved(true);
         subscription.setCanceled(isCanceled);
         subscription.setRenewed(isRenewed);
         subscription.setMonthlyPrice(5.99f);
-        subscription.setDetails("Abbonamento attivo");
+
+        if (isCanceled) {
+            subscription.setDetails("Subscription canceled");
+        } else if (isRenewed) {
+            subscription.setDetails("Subscription renewed");
+        } else {
+            subscription.setDetails("Active subscription");
+        }
         subscriptionService.addSingleSubscription(subscription);
         return subscription;
     }
 
+    //------------------------------- VISUALIZZA ORDINI - ACQUISTI - ABBONAMENTI ------------------------
+
+    public List<Order> getCustomerOrders(Long customerId) {
+        Customer customer = customerRepo.findById(customerId).orElse(null);
+        if (customer != null) {
+            return customer.getOrders();
+        }
+        return Collections.emptyList();
+    }
 
     //---------------------METODI CRUD---------------------
     public Customer createCustomer(Customer customer) throws ConflictException {
@@ -246,6 +261,14 @@ public class CustomerService {
         customer.setAddress(customerDetails.getAddress());
         customer.setEmail(customerDetails.getEmail());
         customer.setPassword(customerDetails.getPassword());
+        // Update the list of orders
+        customer.setOrders(customerDetails.getOrders());
+
+        // Update the list of purchases
+        customer.setPurchases(customerDetails.getPurchases());
+
+        // Update the subscription
+        customer.setSubscription(customerDetails.getSubscription());
         return customerRepo.save(customer);
     }
 

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.minidev.json.annotate.JsonIgnore;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,7 +25,6 @@ public class Order {
     private LocalDateTime dateOfOrder;
     private LocalDate dateOfShipping;
     private LocalDate dateOfArrival;
-    private boolean isGift;
     private String details;
     @NotNull
     private float totalPrice;

@@ -3,14 +3,14 @@ package it.develhope.javaTeam2Develhope.digitalPurchase;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class DigitalPurchaseDTO {
     private Long id;
     private Long customerCardId;
     private Long purchasedBookId;
-    private LocalDate dateOfPurchase;
-    private boolean isGift;
+    private LocalDateTime dateOfPurchase;
     private String details;
     private float totalPrice;
 
@@ -21,7 +21,6 @@ public class DigitalPurchaseDTO {
         this.customerCardId = digitalPurchase.getCustomerCard().getId();
         this.purchasedBookId = digitalPurchase.getPurchasedBook().getId();
         this.dateOfPurchase = digitalPurchase.getDateOfPurchase();
-        this.isGift = digitalPurchase.isGift();
         this.details = digitalPurchase.getDetails();
         this.totalPrice = digitalPurchase.getTotalPrice();
     }

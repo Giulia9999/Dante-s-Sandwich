@@ -81,19 +81,17 @@ public class CustomerController {
   //-----------------------LIBRO FISICO----------------------
   @PostMapping("/orderBook/{customerCardId}")
   public ResponseEntity<OrderDTO> order(@PathVariable Long customerCardId,
-                                        @RequestParam Long bookId,
-                                        @RequestParam Boolean isGift) throws BookNotFoundException {
-    Order order = customerService.orderBook(customerCardId, bookId, isGift);
+                                        @RequestParam Long bookId) throws BookNotFoundException, ConflictException {
+    Order order = customerService.orderBook(customerCardId, bookId);
     OrderDTO orderDTO = new OrderDTO(order);
     return ResponseEntity.status(HttpStatus.CREATED).body(orderDTO);
   }
 
   //-----------------------LIBRO DIGITALE------------------------
-  @PostMapping("/orderDigital/{customerCardId}")
-  public ResponseEntity<DigitalPurchaseDTO> digitalPurchase(@PathVariable Long customerCardId,
-                                                            @RequestParam Long bookId,
-                                                            @RequestParam Boolean isGift) throws BookNotFoundException{
-    DigitalPurchase digitalPurchase = customerService.buyDigitalBook(customerCardId,bookId,isGift);
+  @PostMapping("/digitalPurchase/{customerCardId}")
+  public ResponseEntity<DigitalPurchaseDTO> purchaseDigital(@PathVariable Long customerCardId,
+                                                            @RequestParam Long bookId) throws ConflictException {
+    DigitalPurchase digitalPurchase = customerService.buyDigitalBook(customerCardId,bookId);
     DigitalPurchaseDTO digitalPurchaseDTO = new DigitalPurchaseDTO(digitalPurchase);
     return ResponseEntity.status(HttpStatus.CREATED).body(digitalPurchaseDTO);
   }
@@ -101,9 +99,11 @@ public class CustomerController {
   //----------------------ABBONAMENTO EBOOK--------------------
   @PostMapping("/subscription/{customerCardId}")
   public ResponseEntity<SubscriptionDTO> subscription(@PathVariable Long customerCardId,
-                                                      @RequestParam Boolean isCanceled,
-                                                      @RequestParam Boolean isRenewed){
-    Subscription subscription = customerService.buySubscription(customerCardId,isCanceled, isRenewed);
+                                                      @RequestParam(required = false) Boolean isCanceled,
+                                                      @RequestParam(required = false) Boolean isRenewed) throws ConflictException {
+    if(isRenewed==null) isRenewed=false;
+    if(isCanceled==null) isCanceled=false;
+    Subscription subscription = customerService.getSubscription(customerCardId,isCanceled, isRenewed);
     SubscriptionDTO subscriptionDTO = new SubscriptionDTO(subscription);
     return ResponseEntity.status(HttpStatus.CREATED).body(subscriptionDTO);
   }

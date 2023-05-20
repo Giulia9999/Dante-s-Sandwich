@@ -28,7 +28,6 @@ public class OrderDTO {
         this.dateOfOrder = order.getDateOfOrder();
         this.dateOfShipping = order.getDateOfShipping();
         this.dateOfArrival = order.getDateOfArrival();
-        this.isGift = order.isGift();
         this.details = order.getDetails();
         this.totalPrice = order.getTotalPrice();
         this.customerCardId = order.getCustomerCard().getId();
