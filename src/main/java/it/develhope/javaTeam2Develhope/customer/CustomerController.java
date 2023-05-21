@@ -5,10 +5,14 @@ import it.develhope.javaTeam2Develhope.book.BookService;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCardDTO;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCardRepo;
+import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchase;
+import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchaseDTO;
 import it.develhope.javaTeam2Develhope.order.Order;
 import it.develhope.javaTeam2Develhope.order.OrderDTO;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCardService;
+import it.develhope.javaTeam2Develhope.subscription.Subscription;
+import it.develhope.javaTeam2Develhope.subscription.SubscriptionDTO;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +20,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -73,14 +79,37 @@ public class CustomerController {
   }
 
   //------------------METODI DI ACQUISTO---------------------
+
+  //-----------------------LIBRO FISICO----------------------
   @PostMapping("/orderBook/{customerCardId}")
   public ResponseEntity<OrderDTO> order(@PathVariable Long customerCardId,
-                                        @RequestParam Long bookId,
-                                        @RequestParam Boolean isGift) throws BookNotFoundException {
-    Order order = customerService.orderBook(customerCardId, bookId, isGift);
+                                        @RequestParam Long bookId) throws BookNotFoundException, ConflictException {
+    Order order = customerService.orderBook(customerCardId, bookId);
     OrderDTO orderDTO = new OrderDTO(order);
     return ResponseEntity.status(HttpStatus.CREATED).body(orderDTO);
   }
+
+  //-----------------------LIBRO DIGITALE------------------------
+  @PostMapping("/digitalPurchase/{customerCardId}")
+  public ResponseEntity<DigitalPurchaseDTO> purchaseDigital(@PathVariable Long customerCardId,
+                                                            @RequestParam Long bookId) throws ConflictException {
+    DigitalPurchase digitalPurchase = customerService.buyDigitalBook(customerCardId,bookId);
+    DigitalPurchaseDTO digitalPurchaseDTO = new DigitalPurchaseDTO(digitalPurchase);
+    return ResponseEntity.status(HttpStatus.CREATED).body(digitalPurchaseDTO);
+  }
+
+  //----------------------ABBONAMENTO EBOOK--------------------
+  @PostMapping("/subscription/{customerCardId}")
+  public ResponseEntity<SubscriptionDTO> subscription(@PathVariable Long customerCardId,
+                                                      @RequestParam(required = false) Boolean isCanceled,
+                                                      @RequestParam(required = false) Boolean isRenewed) throws ConflictException {
+    if(isRenewed==null) isRenewed=false;
+    if(isCanceled==null) isCanceled=false;
+    Subscription subscription = customerService.getSubscription(customerCardId,isCanceled, isRenewed);
+    SubscriptionDTO subscriptionDTO = new SubscriptionDTO(subscription);
+    return ResponseEntity.status(HttpStatus.CREATED).body(subscriptionDTO);
+  }
+
 
   //-----------------------METODI CRUD----------------------
 

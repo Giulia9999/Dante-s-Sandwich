@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -25,10 +26,8 @@ public class DigitalPurchase {
     private CustomerCard customerCard;
     @OneToOne
     private Book purchasedBook;
-    private LocalDate dateOfPurchase;
+    private LocalDateTime dateOfPurchase;
     private boolean isGift;
     private String details;
     private float totalPrice;
-    @OneToOne
-    private Book book;
 }

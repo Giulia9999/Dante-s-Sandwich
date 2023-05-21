@@ -1,6 +1,7 @@
 package it.develhope.javaTeam2Develhope.subscription;
 
 import it.develhope.javaTeam2Develhope.book.Book;
+import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -33,4 +34,6 @@ public class Subscription {
     private String details;
     @OneToMany
     private List<Book> books;
+    @OneToOne
+    private CustomerCard customerCard;
 }

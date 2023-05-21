@@ -1,6 +1,7 @@
 package it.develhope.javaTeam2Develhope.customer;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
 import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchase;
 import it.develhope.javaTeam2Develhope.order.Order;

@@ -6,12 +6,15 @@ import it.develhope.javaTeam2Develhope.book.BookRepo;
 import it.develhope.javaTeam2Develhope.book.BookService;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCardRepo;
+import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchase;
 import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchaseService;
 import it.develhope.javaTeam2Develhope.order.Order;
 import it.develhope.javaTeam2Develhope.order.OrderController;
 import it.develhope.javaTeam2Develhope.order.OrderService;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCardService;
+import it.develhope.javaTeam2Develhope.subscription.Subscription;
+import it.develhope.javaTeam2Develhope.subscription.SubscriptionService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
@@ -27,6 +30,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 @Service
 public class CustomerService {
@@ -36,18 +41,20 @@ public class CustomerService {
     private final CustomerCardRepo customerCardRepo;
     private final OrderService orderService;
     private final BookService bookService;
-    private final OrderController orderController;
-
+    private final SubscriptionService subscriptionService;
+    private final BookRepo bookRepo;
     public CustomerService(CustomerRepo customerRepo, PaymentCardService paymentCardService,
                            DigitalPurchaseService digitalPurchaseService, CustomerCardRepo customerCardRepo,
-                           OrderService orderService, BookService bookService, OrderController orderController) {
+                           OrderService orderService, BookService bookService, SubscriptionService subscriptionService,
+                           BookRepo bookRepo) {
         this.customerRepo = customerRepo;
         this.paymentCardService = paymentCardService;
         this.digitalPurchaseService = digitalPurchaseService;
         this.customerCardRepo = customerCardRepo;
         this.orderService = orderService;
         this.bookService = bookService;
-        this.orderController = orderController;
+        this.subscriptionService = subscriptionService;
+        this.bookRepo = bookRepo;
     }
 
     //---------------------METODI GESTIONE CARTE DI PAGAMENTO---------------
@@ -129,7 +136,9 @@ public class CustomerService {
     }
 
     //--------------------------METODI DI ACQUISTO--------------------
-    public Order orderBook(Long customerCardId, Long bookId, Boolean isGift){
+
+    //-----------------------------LIBRO FISICO-----------------------
+    public Order orderBook(Long customerCardId, Long bookId) throws ConflictException {
         Order order = new Order();
         float shippingCost = 2.5f;
         Book book = null;
@@ -141,18 +150,74 @@ public class CustomerService {
         CustomerCard customerCard = customerCardRepo.getReferenceById(customerCardId);
         order.setCustomerCard(customerCard);
         order.setBook(book);
-        order.setGift(isGift);
         order.setDateOfOrder(LocalDateTime.from(LocalDateTime.now()));
         order.setDateOfShipping(LocalDateTime.now().plusDays(1).toLocalDate());
         order.setDateOfArrival(order.getDateOfShipping().plusDays(2));
         order.setDetails("Ordine effettuato");
         if(book != null){
+            //validazione metodo di pagamento
+            for (PaymentCard card: customerCard.getPaymentCards()) {
+                paymentCardService.validatePaymentCard(card, book.getPrice() + shippingCost);
+            }
             order.setTotalPrice(book.getPrice() + shippingCost);
             orderService.addSingleOrder(order);
         }
         return order;
     }
 
+    //--------------------------------LIBRO DIGITALE----------------------------
+    public DigitalPurchase buyDigitalBook(Long customerCardId, Long bookId) throws ConflictException {
+    DigitalPurchase digitalPurchase = new DigitalPurchase();
+    Book book = null;
+    try{
+        book = bookService.getBookById(bookId);
+    } catch (BookNotFoundException e) {
+        e.printStackTrace();
+    }
+    CustomerCard customerCard = customerCardRepo.getReferenceById(customerCardId);
+    digitalPurchase.setCustomerCard(customerCard);
+    digitalPurchase.setPurchasedBook(book);
+    digitalPurchase.setDateOfPurchase(LocalDateTime.from(LocalDateTime.now()));
+    digitalPurchase.setDetails("E-book acquistato");
+    if(book != null){
+        //validazione metodo di pagamento
+        for (PaymentCard card: customerCard.getPaymentCards()) {
+            paymentCardService.validatePaymentCard(card, book.getPrice());
+        }
+        digitalPurchase.setTotalPrice(book.getPrice());
+        digitalPurchaseService.addSingleDigitalPurchase(digitalPurchase);
+    }
+    return digitalPurchase;
+    }
+
+    //--------------------------------ABBONAMENTO EBOOK------------------------------
+    public Subscription getSubscription(Long customerCardId, Boolean isCanceled, Boolean isRenewed) throws ConflictException {
+        Subscription subscription = new Subscription();
+        float monthlyPrice = 5.99f;
+        CustomerCard customerCard = customerCardRepo.getReferenceById(customerCardId);
+        subscription.setCustomerCard(customerCard);
+        List<Book> books = bookRepo.findAll();
+        subscription.setBooks(books);
+        subscription.setDateOfSubscription(LocalDate.from(LocalDateTime.now()));
+        subscription.setApproved(true);
+        subscription.setCanceled(isCanceled);
+        subscription.setRenewed(isRenewed);
+        subscription.setMonthlyPrice(monthlyPrice);
+
+        if (isCanceled) {
+            subscription.setDetails("Subscription canceled");
+        } else if (isRenewed) {
+            subscription.setDetails("Subscription renewed");
+        } else {
+            subscription.setDetails("Active subscription");
+        }
+        //validazione metodo di pagamento
+        for (PaymentCard card: customerCard.getPaymentCards()) {
+            paymentCardService.validatePaymentCard(card, monthlyPrice);
+        }
+        subscriptionService.addSingleSubscription(subscription);
+        return subscription;
+    }
 
 
     //---------------------METODI CRUD---------------------
@@ -200,6 +265,14 @@ public class CustomerService {
         customer.setAddress(customerDetails.getAddress());
         customer.setEmail(customerDetails.getEmail());
         customer.setPassword(customerDetails.getPassword());
+        // Update the list of orders
+        customer.setOrders(customerDetails.getOrders());
+
+        // Update the list of purchases
+        customer.setPurchases(customerDetails.getPurchases());
+
+        // Update the subscription
+        customer.setSubscription(customerDetails.getSubscription());
         return customerRepo.save(customer);
     }
 
