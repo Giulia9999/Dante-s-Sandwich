@@ -157,6 +157,8 @@ public class CustomerService {
         if(book != null){
             order.setTotalPrice(book.getPrice() + shippingCost);
             orderService.addSingleOrder(order);
+            Customer customer = customerCard.getCustomer();
+            customer.getOrders().add(order);
         }
         return order;
     }
@@ -206,15 +208,6 @@ public class CustomerService {
         return subscription;
     }
 
-    //------------------------------- VISUALIZZA ORDINI - ACQUISTI - ABBONAMENTI ------------------------
-
-    public List<Order> getCustomerOrders(Long customerId) {
-        Customer customer = customerRepo.findById(customerId).orElse(null);
-        if (customer != null) {
-            return customer.getOrders();
-        }
-        return Collections.emptyList();
-    }
 
     //---------------------METODI CRUD---------------------
     public Customer createCustomer(Customer customer) throws ConflictException {
