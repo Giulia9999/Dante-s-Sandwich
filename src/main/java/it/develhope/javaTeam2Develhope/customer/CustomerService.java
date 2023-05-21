@@ -155,10 +155,12 @@ public class CustomerService {
         order.setDateOfArrival(order.getDateOfShipping().plusDays(2));
         order.setDetails("Ordine effettuato");
         if(book != null){
+            //validazione metodo di pagamento
+            for (PaymentCard card: customerCard.getPaymentCards()) {
+                paymentCardService.validatePaymentCard(card, book.getPrice() + shippingCost);
+            }
             order.setTotalPrice(book.getPrice() + shippingCost);
             orderService.addSingleOrder(order);
-            Customer customer = customerCard.getCustomer();
-            customer.getOrders().add(order);
         }
         return order;
     }
@@ -178,6 +180,10 @@ public class CustomerService {
     digitalPurchase.setDateOfPurchase(LocalDateTime.from(LocalDateTime.now()));
     digitalPurchase.setDetails("E-book acquistato");
     if(book != null){
+        //validazione metodo di pagamento
+        for (PaymentCard card: customerCard.getPaymentCards()) {
+            paymentCardService.validatePaymentCard(card, book.getPrice());
+        }
         digitalPurchase.setTotalPrice(book.getPrice());
         digitalPurchaseService.addSingleDigitalPurchase(digitalPurchase);
     }
@@ -187,6 +193,7 @@ public class CustomerService {
     //--------------------------------ABBONAMENTO EBOOK------------------------------
     public Subscription getSubscription(Long customerCardId, Boolean isCanceled, Boolean isRenewed) throws ConflictException {
         Subscription subscription = new Subscription();
+        float monthlyPrice = 5.99f;
         CustomerCard customerCard = customerCardRepo.getReferenceById(customerCardId);
         subscription.setCustomerCard(customerCard);
         List<Book> books = bookRepo.findAll();
@@ -195,7 +202,7 @@ public class CustomerService {
         subscription.setApproved(true);
         subscription.setCanceled(isCanceled);
         subscription.setRenewed(isRenewed);
-        subscription.setMonthlyPrice(5.99f);
+        subscription.setMonthlyPrice(monthlyPrice);
 
         if (isCanceled) {
             subscription.setDetails("Subscription canceled");
@@ -203,6 +210,10 @@ public class CustomerService {
             subscription.setDetails("Subscription renewed");
         } else {
             subscription.setDetails("Active subscription");
+        }
+        //validazione metodo di pagamento
+        for (PaymentCard card: customerCard.getPaymentCards()) {
+            paymentCardService.validatePaymentCard(card, monthlyPrice);
         }
         subscriptionService.addSingleSubscription(subscription);
         return subscription;
