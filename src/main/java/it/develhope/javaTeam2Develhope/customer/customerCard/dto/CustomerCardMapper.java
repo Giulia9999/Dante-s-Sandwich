@@ -13,6 +13,9 @@ public class CustomerCardMapper {
     }
 
     public CustomerCardDTO toDto(CustomerCard customerCard) {
-        return modelMapper.map(customerCard, CustomerCardDTO.class);
+        CustomerCardDTO customerCardDTO = modelMapper.map(customerCard, CustomerCardDTO.class);
+        customerCardDTO.setName(customerCard.getCustomer().getName());
+        customerCardDTO.setEmail(customerCard.getCustomer().getEmail());
+        return customerCardDTO;
     }
 }

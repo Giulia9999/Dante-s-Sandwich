@@ -6,10 +6,11 @@ import it.develhope.javaTeam2Develhope.book.BookRepo;
 import it.develhope.javaTeam2Develhope.book.BookService;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCardRepo;
+import it.develhope.javaTeam2Develhope.customer.customerHistory.CustomerHistory;
+import it.develhope.javaTeam2Develhope.customer.customerHistory.CustomerHistoryRepo;
 import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchase;
 import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchaseService;
 import it.develhope.javaTeam2Develhope.order.Order;
-import it.develhope.javaTeam2Develhope.order.OrderController;
 import it.develhope.javaTeam2Develhope.order.OrderService;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCardService;
@@ -27,10 +28,8 @@ import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 @Service
@@ -43,10 +42,11 @@ public class CustomerService {
     private final BookService bookService;
     private final SubscriptionService subscriptionService;
     private final BookRepo bookRepo;
+    private final CustomerHistoryRepo customerHistoryRepo;
     public CustomerService(CustomerRepo customerRepo, PaymentCardService paymentCardService,
                            DigitalPurchaseService digitalPurchaseService, CustomerCardRepo customerCardRepo,
                            OrderService orderService, BookService bookService, SubscriptionService subscriptionService,
-                           BookRepo bookRepo) {
+                           BookRepo bookRepo, CustomerHistoryRepo customerHistoryRepo) {
         this.customerRepo = customerRepo;
         this.paymentCardService = paymentCardService;
         this.digitalPurchaseService = digitalPurchaseService;
@@ -55,6 +55,7 @@ public class CustomerService {
         this.bookService = bookService;
         this.subscriptionService = subscriptionService;
         this.bookRepo = bookRepo;
+        this.customerHistoryRepo = customerHistoryRepo;
     }
 
     //---------------------METODI GESTIONE CARTE DI PAGAMENTO---------------
@@ -161,6 +162,19 @@ public class CustomerService {
             }
             order.setTotalPrice(book.getPrice() + shippingCost);
             orderService.addSingleOrder(order);
+
+            Customer customer = customerCard.getCustomer();
+            Optional<CustomerHistory> optionalCustomerHistory = customerHistoryRepo.findById(customer.getId());
+            //Add order to customer history
+            CustomerHistory customerHistory;
+            if(optionalCustomerHistory.isPresent()){
+                customerHistory = optionalCustomerHistory.get();
+            }else {
+                customerHistory = new CustomerHistory();
+                customerHistory.setCustomer(customer);
+            }
+            customerHistory.getOrders().add(order);
+            customerHistoryRepo.save(customerHistory);
         }
         return order;
     }
@@ -186,6 +200,18 @@ public class CustomerService {
         }
         digitalPurchase.setTotalPrice(book.getPrice());
         digitalPurchaseService.addSingleDigitalPurchase(digitalPurchase);
+        Customer customer = customerCard.getCustomer();
+        Optional<CustomerHistory> optionalCustomerHistory = customerHistoryRepo.findById(customer.getId());
+        //Add purchase to customer history
+        CustomerHistory customerHistory;
+        if(optionalCustomerHistory.isPresent()){
+            customerHistory = optionalCustomerHistory.get();
+        }else {
+            customerHistory = new CustomerHistory();
+            customerHistory.setCustomer(customer);
+        }
+        customerHistory.getPurchases().add(digitalPurchase);
+        customerHistoryRepo.save(customerHistory);
     }
     return digitalPurchase;
     }
@@ -216,6 +242,18 @@ public class CustomerService {
             paymentCardService.validatePaymentCard(card, monthlyPrice);
         }
         subscriptionService.addSingleSubscription(subscription);
+        Customer customer = customerCard.getCustomer();
+        Optional<CustomerHistory> optionalCustomerHistory = customerHistoryRepo.findById(customer.getId());
+        //Add subscription to customer history
+        CustomerHistory customerHistory;
+        if(optionalCustomerHistory.isPresent()){
+            customerHistory = optionalCustomerHistory.get();
+        }else {
+            customerHistory = new CustomerHistory();
+            customerHistory.setCustomer(customer);
+        }
+        customerHistory.setSubscription(subscription);
+        customerHistoryRepo.save(customerHistory);
         return subscription;
     }
 
