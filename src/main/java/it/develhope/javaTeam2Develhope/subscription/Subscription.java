@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -22,7 +23,7 @@ public class Subscription {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @NotNull
-    private LocalDate dateOfSubscription;
+    private LocalDateTime dateOfSubscription;
     @NotNull
     private boolean isApproved;
     @NotNull

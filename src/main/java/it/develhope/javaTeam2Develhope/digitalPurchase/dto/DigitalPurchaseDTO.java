@@ -14,15 +14,4 @@ public class DigitalPurchaseDTO {
     private LocalDateTime dateOfPurchase;
     private String details;
     private float totalPrice;
-
-    public DigitalPurchaseDTO(){}
-
-    public DigitalPurchaseDTO(DigitalPurchase digitalPurchase){
-        this.id = digitalPurchase.getId();
-        this.customerCardId = digitalPurchase.getCustomerCard().getId();
-        this.purchasedBookId = digitalPurchase.getPurchasedBook().getId();
-        this.dateOfPurchase = digitalPurchase.getDateOfPurchase();
-        this.details = digitalPurchase.getDetails();
-        this.totalPrice = digitalPurchase.getTotalPrice();
-    }
 }

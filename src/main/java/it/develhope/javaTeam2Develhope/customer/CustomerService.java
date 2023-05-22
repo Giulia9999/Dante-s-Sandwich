@@ -198,7 +198,7 @@ public class CustomerService {
         subscription.setCustomerCard(customerCard);
         List<Book> books = bookRepo.findAll();
         subscription.setBooks(books);
-        subscription.setDateOfSubscription(LocalDate.from(LocalDateTime.now()));
+        subscription.setDateOfSubscription(LocalDateTime.from(LocalDateTime.now()));
         subscription.setApproved(true);
         subscription.setCanceled(isCanceled);
         subscription.setRenewed(isRenewed);
