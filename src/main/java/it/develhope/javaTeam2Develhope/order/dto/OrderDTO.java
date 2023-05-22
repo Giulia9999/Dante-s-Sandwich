@@ -1,5 +1,6 @@
-package it.develhope.javaTeam2Develhope.order;
+package it.develhope.javaTeam2Develhope.order.dto;
 
+import it.develhope.javaTeam2Develhope.order.Order;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -20,17 +21,4 @@ public class OrderDTO {
     private float totalPrice;
     private Long customerCardId;
     private Long bookId;
-
-    public OrderDTO() {}
-
-    public OrderDTO(Order order) {
-        this.id = order.getId();
-        this.dateOfOrder = order.getDateOfOrder();
-        this.dateOfShipping = order.getDateOfShipping();
-        this.dateOfArrival = order.getDateOfArrival();
-        this.details = order.getDetails();
-        this.totalPrice = order.getTotalPrice();
-        this.customerCardId = order.getCustomerCard().getId();
-        this.bookId = order.getBook().getId();
-    }
 }
