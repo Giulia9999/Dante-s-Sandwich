@@ -1,5 +1,6 @@
-package it.develhope.javaTeam2Develhope.digitalPurchase;
+package it.develhope.javaTeam2Develhope.digitalPurchase.dto;
 
+import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchase;
 import lombok.Data;
 
 import java.time.LocalDate;

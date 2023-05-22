@@ -1,4 +1,4 @@
-package it.develhope.javaTeam2Develhope.customer;
+package it.develhope.javaTeam2Develhope.customer.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

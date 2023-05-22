@@ -3,16 +3,20 @@ package it.develhope.javaTeam2Develhope.customer;
 import it.develhope.javaTeam2Develhope.book.BookNotFoundException;
 import it.develhope.javaTeam2Develhope.book.BookService;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
-import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCardDTO;
+import it.develhope.javaTeam2Develhope.customer.customerCard.dto.CustomerCardDTO;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCardRepo;
+import it.develhope.javaTeam2Develhope.customer.customerCard.dto.CustomerCardMapper;
 import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchase;
-import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchaseDTO;
+import it.develhope.javaTeam2Develhope.digitalPurchase.dto.DigitalPurchaseDTO;
+import it.develhope.javaTeam2Develhope.digitalPurchase.dto.DigitalPurchaseMapper;
 import it.develhope.javaTeam2Develhope.order.Order;
-import it.develhope.javaTeam2Develhope.order.OrderDTO;
+import it.develhope.javaTeam2Develhope.order.dto.OrderDTO;
+import it.develhope.javaTeam2Develhope.order.dto.OrderMapper;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCardService;
 import it.develhope.javaTeam2Develhope.subscription.Subscription;
-import it.develhope.javaTeam2Develhope.subscription.SubscriptionDTO;
+import it.develhope.javaTeam2Develhope.subscription.dto.SubscriptionDTO;
+import it.develhope.javaTeam2Develhope.subscription.dto.SubscriptionMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +24,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 
 @RestController
@@ -33,12 +35,19 @@ public class CustomerController {
   private final CustomerService customerService;
   private final CustomerCardRepo customerCardRepo;
   private final BookService bookService;
-
+  private final DigitalPurchaseMapper digitalPurchaseMapper;
+  private final CustomerCardMapper customerCardMapper;
+  private final OrderMapper orderMapper;
+  private final SubscriptionMapper subscriptionMapper;
   public CustomerController(CustomerService customerService, CustomerCardRepo customerCardRepo,
-                            BookService bookService, PaymentCardService paymentCardService) {
+                            BookService bookService, PaymentCardService paymentCardService, DigitalPurchaseMapper digitalPurchaseMapper, CustomerCardMapper customerCardMapper, OrderMapper orderMapper, SubscriptionMapper subscriptionMapper) {
     this.customerService = customerService;
     this.customerCardRepo = customerCardRepo;
     this.bookService = bookService;
+    this.digitalPurchaseMapper = digitalPurchaseMapper;
+    this.customerCardMapper = customerCardMapper;
+    this.orderMapper = orderMapper;
+    this.subscriptionMapper = subscriptionMapper;
   }
 
   //----------GESTIONE CARTE DI PAGAMENTO--------------
@@ -46,7 +55,7 @@ public class CustomerController {
   public ResponseEntity<CustomerCardDTO> addFirstPaymentMethod(@PathVariable Long customerId, @RequestBody PaymentCard paymentCard) throws Exception, ConflictException {
     CustomerCard customerCard = customerService.addFirstPaymentMethod(paymentCard, customerId);
     customerCardRepo.save(customerCard);
-    CustomerCardDTO customerCardDTO = new CustomerCardDTO(customerCard);
+    CustomerCardDTO customerCardDTO = customerCardMapper.toDto(customerCard);
     return ResponseEntity.status(HttpStatus.CREATED).body(customerCardDTO);
   }
 
@@ -55,7 +64,7 @@ public class CustomerController {
     CustomerCard customerCard = customerCardRepo.findById(customerCardId).orElseThrow(EntityNotFoundException::new);
     customerCard = customerService.addPaymentMethod(customerCardId, paymentCard);
     customerCardRepo.save(customerCard);
-    CustomerCardDTO customerCardDTO = new CustomerCardDTO(customerCard);
+    CustomerCardDTO customerCardDTO = customerCardMapper.toDto(customerCard);
     return ResponseEntity.status(HttpStatus.CREATED).body(customerCardDTO);
   }
   @PutMapping("/updatePayment/{customerCardId}/{paymentCardId}")
@@ -64,7 +73,7 @@ public class CustomerController {
 // Call a getter method to initialize the object and force Hibernate to load the actual entity
     customerCard = customerService.updatePaymentMethod(customerCardId, paymentCardId, paymentCard);
     customerCardRepo.save(customerCard);
-    CustomerCardDTO customerCardDTO = new CustomerCardDTO(customerCard);
+    CustomerCardDTO customerCardDTO = customerCardMapper.toDto(customerCard);
     return ResponseEntity.status(HttpStatus.CREATED).body(customerCardDTO);
   }
 
@@ -74,7 +83,7 @@ public class CustomerController {
     CustomerCard customerCard;
     customerCard = customerService.removePaymentMethod(customerCardId, paymentCardId);
     customerCardRepo.save(customerCard);
-    CustomerCardDTO customerCardDTO = new CustomerCardDTO(customerCard);
+    CustomerCardDTO customerCardDTO = customerCardMapper.toDto(customerCard);
     return ResponseEntity.status(HttpStatus.OK).body(customerCardDTO);
   }
 
@@ -85,7 +94,7 @@ public class CustomerController {
   public ResponseEntity<OrderDTO> order(@PathVariable Long customerCardId,
                                         @RequestParam Long bookId) throws BookNotFoundException, ConflictException {
     Order order = customerService.orderBook(customerCardId, bookId);
-    OrderDTO orderDTO = new OrderDTO(order);
+    OrderDTO orderDTO = orderMapper.toDto(order);
     return ResponseEntity.status(HttpStatus.CREATED).body(orderDTO);
   }
 
@@ -94,7 +103,7 @@ public class CustomerController {
   public ResponseEntity<DigitalPurchaseDTO> purchaseDigital(@PathVariable Long customerCardId,
                                                             @RequestParam Long bookId) throws ConflictException {
     DigitalPurchase digitalPurchase = customerService.buyDigitalBook(customerCardId,bookId);
-    DigitalPurchaseDTO digitalPurchaseDTO = new DigitalPurchaseDTO(digitalPurchase);
+    DigitalPurchaseDTO digitalPurchaseDTO = digitalPurchaseMapper.toDto(digitalPurchase);
     return ResponseEntity.status(HttpStatus.CREATED).body(digitalPurchaseDTO);
   }
 
@@ -106,7 +115,7 @@ public class CustomerController {
     if(isRenewed==null) isRenewed=false;
     if(isCanceled==null) isCanceled=false;
     Subscription subscription = customerService.getSubscription(customerCardId,isCanceled, isRenewed);
-    SubscriptionDTO subscriptionDTO = new SubscriptionDTO(subscription);
+    SubscriptionDTO subscriptionDTO = subscriptionMapper.toDto(subscription);
     return ResponseEntity.status(HttpStatus.CREATED).body(subscriptionDTO);
   }
 

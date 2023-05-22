@@ -1,6 +1,7 @@
-package it.develhope.javaTeam2Develhope.customer.customerCard;
+package it.develhope.javaTeam2Develhope.customer.customerCard.dto;
 
 import it.develhope.javaTeam2Develhope.customer.Customer;
+import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCardDTO;
 import jakarta.persistence.*;
@@ -16,16 +17,4 @@ public class CustomerCardDTO {
     private String name;
     private String email;
     private List<PaymentCardDTO> paymentCards;
-
-    public CustomerCardDTO() {}
-
-    public CustomerCardDTO(CustomerCard customerCard) {
-        this.id = customerCard.getId();
-        this.name = customerCard.getCustomer().getName();
-        this.email = customerCard.getCustomer().getEmail();
-        this.paymentCards = customerCard.getPaymentCards().stream()
-                .map(PaymentCardDTO::new)
-                .collect(Collectors.toList());
-    }
-
 }

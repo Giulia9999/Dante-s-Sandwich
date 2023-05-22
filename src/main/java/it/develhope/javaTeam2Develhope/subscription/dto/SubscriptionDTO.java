@@ -1,6 +1,7 @@
-package it.develhope.javaTeam2Develhope.subscription;
+package it.develhope.javaTeam2Develhope.subscription.dto;
 
 
+import it.develhope.javaTeam2Develhope.subscription.Subscription;
 import lombok.Data;
 
 import java.time.LocalDate;

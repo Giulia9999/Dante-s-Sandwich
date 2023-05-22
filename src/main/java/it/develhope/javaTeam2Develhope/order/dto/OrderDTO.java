@@ -1,5 +1,6 @@
-package it.develhope.javaTeam2Develhope.order;
+package it.develhope.javaTeam2Develhope.order.dto;
 
+import it.develhope.javaTeam2Develhope.order.Order;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
