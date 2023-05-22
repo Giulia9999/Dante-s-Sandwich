@@ -20,7 +20,7 @@ public class CustomerCard {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id", unique = true)
     private Customer customer;
 

@@ -17,4 +17,5 @@ public class CustomerCardDTO {
     private String name;
     private String email;
     private List<PaymentCardDTO> paymentCards;
+
 }
