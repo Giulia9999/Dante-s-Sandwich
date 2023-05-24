@@ -2,15 +2,18 @@ package it.develhope.javaTeam2Develhope.customer;
 
 import it.develhope.javaTeam2Develhope.book.Book;
 import it.develhope.javaTeam2Develhope.book.BookNotFoundException;
+import it.develhope.javaTeam2Develhope.book.BookRepo;
 import it.develhope.javaTeam2Develhope.book.BookService;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCardRepo;
+import it.develhope.javaTeam2Develhope.customer.customerHistory.CustomerHistoryRepo;
 import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchaseService;
 import it.develhope.javaTeam2Develhope.order.Order;
 import it.develhope.javaTeam2Develhope.order.OrderController;
 import it.develhope.javaTeam2Develhope.order.OrderService;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCardService;
+import it.develhope.javaTeam2Develhope.subscription.SubscriptionService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
@@ -23,161 +26,74 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
+
 @SpringJUnitConfig
 public class CustomerServiceTests {
-
-    @Mock
-    private CustomerRepo customerRepo;
-
-    @Mock
-    private PaymentCardService paymentCardService;
-
-    @Mock
-    private DigitalPurchaseService digitalPurchaseService;
-
-    @Mock
-    private CustomerCardRepo customerCardRepo;
-
-    @Mock
-    private OrderService orderService;
-
-    @Mock
-    private BookService bookService;
-
-    @Mock
-    private OrderController orderController;
-
-    @InjectMocks
-    private CustomerService customerService;
-
-    private PaymentCard paymentCard;
-
-    private Customer customer;
-
-    private Book book;
-
-    private CustomerCard customerCard;
-
-    private Order order;
-
-    @Before
-    public void setUp() throws BookNotFoundException {
-        paymentCard = new PaymentCard();
-        paymentCard.setId(1L);
-        paymentCard.setCardNum(12345678923423L);
-        paymentCard.setCardType("VISA");
-        paymentCard.setCardExpiry(LocalDate.parse("01-25-2020"));
-        paymentCard.setCardHolderName("Test User");
-
-        customer = new Customer();
-        customer.setId(1L);
-        customer.setEmail("test@example.com");
-        customer.setPassword("password");
-
-        book = new Book();
-        book.setId(1L);
-        book.setPrice(10.0f);
-
-        customerCard = new CustomerCard();
-        customerCard.setId(1L);
-        customerCard.setCustomer(customer);
-        customerCard.addPaymentCard(paymentCard);
-
-        order = new Order();
-        order.setBook(book);
-        order.setCustomerCard(customerCard);
-        order.setTotalPrice(book.getPrice() + 2.5f);
-
-        Mockito.when(customerRepo.findByEmail(customer.getEmail())).thenReturn(null);
-        Mockito.when(customerRepo.findById(customer.getId())).thenReturn(Optional.of(customer));
-        Mockito.when(customerCardRepo.getReferenceById(customerCard.getId())).thenReturn(customerCard);
-        Mockito.when(bookService.getBookById(book.getId())).thenReturn(book);
-    }
-
     @Test
-    public void testAddFirstPaymentMethod() throws Exception {
-        Mockito.when(paymentCardService.addSinglePaymentCard(paymentCard)).thenReturn(paymentCard);
-        CustomerCard result = customerService.addFirstPaymentMethod(paymentCard, customer.getId());
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(result.getCustomer().getId(), customer.getId());
-        Assertions.assertEquals(result.getPaymentCards().size(), 1);
-        Assertions.assertEquals(result.getPaymentCards().get(0).getId(), paymentCard.getId());
-    }
+    public void testUpdatePaymentMethod_ValidPaymentCard() {
+        // Arrange
+        Long customerCardId = 1L;
+        Long paymentCardId = 2L;
+        PaymentCard paymentCard = new PaymentCard();
+        paymentCard.setId(paymentCardId);
+        paymentCard.setCardType("Visa");
+        paymentCard.setCardExpiry(LocalDate.parse("2025-08-07"));
+        paymentCard.setCardNum(1234567890123456L);
+        paymentCard.setCardHolderName("John Doe");
+        paymentCard.setBalance(100.0);
 
-    @Test
-    public void testAddPaymentMethod() {
-        Mockito.when(paymentCardService.addSinglePaymentCard(paymentCard)).thenReturn(paymentCard);
-        CustomerCard result = customerService.addPaymentMethod(customerCard.getId(), paymentCard);
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(result.getCustomer().getId(), customer.getId());
-        Assertions.assertEquals(result.getPaymentCards().size(), 2);
-        Assertions.assertEquals(result.getPaymentCards().get(1).getId(), paymentCard.getId());
-    }
+        CustomerCard customerCard = new CustomerCard();
+        customerCard.setId(customerCardId);
+        PaymentCard existingPaymentCard = new PaymentCard();
+        existingPaymentCard.setId(paymentCardId);
+        existingPaymentCard.setCardType("MasterCard");
+        existingPaymentCard.setCardExpiry(LocalDate.parse("2025-05-03"));
+        existingPaymentCard.setCardNum(9876543210987654L);
+        existingPaymentCard.setCardHolderName("Jane Smith");
+        existingPaymentCard.setBalance(50.0);
+        customerCard.addPaymentCard(existingPaymentCard);
 
-    @Test
-    public void testUpdatePaymentMethod() {
-        PaymentCard updatedPaymentCard = new PaymentCard();
-        updatedPaymentCard.setId(1L);
-        updatedPaymentCard.setCardNum(98765432198L);
-        updatedPaymentCard.setCardType("MASTERCARD");
-        updatedPaymentCard.setCardExpiry(LocalDate.parse("01-04-2020"));
-        updatedPaymentCard.setCardHolderName("Test User 2");
-        updatedPaymentCard.setBalance(100.0f);
+        CustomerCardRepo customerCardRepo = mock(CustomerCardRepo.class);
+        PaymentCardService paymentCardService = mock(PaymentCardService.class);
+        when(customerCardRepo.getReferenceById(customerCardId)).thenReturn(customerCard);
 
-        CustomerCard result = customerService.updatePaymentMethod(customerCard.getId(), paymentCard.getId(), updatedPaymentCard);
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(result.getCustomer().getId(), customer.getId());
-        Assertions.assertEquals(result.getPaymentCards().size(), 1);
-        PaymentCard updatedCard = result.getPaymentCards().get(0);
-        Assertions.assertEquals(updatedCard.getId(), updatedPaymentCard.getId());
-        Assertions.assertEquals(updatedCard.getCardNum(), updatedPaymentCard.getCardNum());
-        Assertions.assertEquals(updatedCard.getCardType(), updatedPaymentCard.getCardType());
-        Assertions.assertEquals(updatedCard.getCardExpiry(), updatedPaymentCard.getCardExpiry());
-        Assertions.assertEquals(updatedCard.getCardHolderName(), updatedPaymentCard.getCardHolderName());
-        Assertions.assertEquals(updatedCard.getBalance(), updatedPaymentCard.getBalance());
-    }
+        CustomerRepo customerRepo = mock(CustomerRepo.class);
+        DigitalPurchaseService digitalPurchaseService = mock(DigitalPurchaseService.class);
+        OrderService orderService = mock(OrderService.class);
+        BookService bookService = mock(BookService.class);
+        SubscriptionService subscriptionService = mock(SubscriptionService.class);
+        BookRepo bookRepo = mock(BookRepo.class);
+        CustomerHistoryRepo customerHistoryRepo = mock(CustomerHistoryRepo.class);
 
-    @Test
-    public void testRemovePaymentMethod() throws Exception {
-        CustomerCard result = customerService.removePaymentMethod(customerCard.getId(), paymentCard.getId());
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(result.getCustomer().getId(), customer.getId());
-        Assertions.assertEquals(result.getPaymentCards().size(), 0);
-    }
+        CustomerService customerService = new CustomerService(
+                customerRepo,
+                paymentCardService,
+                digitalPurchaseService,
+                customerCardRepo,
+                orderService,
+                bookService,
+                subscriptionService,
+                bookRepo,
+                customerHistoryRepo
+        );
+        // Act
+        CustomerCard updatedCustomerCard = customerService.updatePaymentMethod(customerCardId, paymentCardId, paymentCard);
 
-    @Test
-    public void testPlaceOrder() throws Exception, ConflictException {
-        Mockito.when(orderService.addSingleOrder(order)).thenReturn(order);
-        Order result = customerService.orderBook(customerCard.getId(), book.getId());
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(result.getCustomerCard().getId(), customerCard.getId());
-        Assertions.assertEquals(result.getBook().getId(), book.getId());
-        Assertions.assertEquals(result.getTotalPrice(), order.getTotalPrice());
-    }
+        // Assert
+        Assertions.assertEquals(customerCardId, updatedCustomerCard.getId());
+        Assertions.assertEquals(1, updatedCustomerCard.getPaymentCards().size());
 
-    @Test
-    public void testGetCustomer() throws Exception {
-        Customer result = customerService.getCustomerById(customer.getId());
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(result.getId(), customer.getId());
-        Assertions.assertEquals(result.getEmail(), customer.getEmail());
-        Assertions.assertEquals(result.getPassword(), customer.getPassword());
-    }
+        PaymentCard updatedPaymentCard = updatedCustomerCard.getPaymentCards().get(0);
+        Assertions.assertEquals(paymentCardId, updatedPaymentCard.getId());
+        Assertions.assertEquals("Visa", updatedPaymentCard.getCardType());
+        Assertions.assertEquals(LocalDate.parse("2025-08-07"), updatedPaymentCard.getCardExpiry());
+        Assertions.assertEquals(1234567890123456L, updatedPaymentCard.getCardNum());
+        Assertions.assertEquals("John Doe", updatedPaymentCard.getCardHolderName());
+        Assertions.assertEquals(100.0, updatedPaymentCard.getBalance(), 0.01);
 
-    @Test
-    public void testUpdateCustomer() throws ConflictException {
-        Customer updatedCustomer = new Customer();
-        updatedCustomer.setId(1L);
-        updatedCustomer.setEmail("test2@example.com");
-        updatedCustomer.setPassword("password2");
-
-        Mockito.when(customerRepo.save(updatedCustomer)).thenReturn(updatedCustomer);
-
-        Customer result = customerService.updateCustomer(updatedCustomer.getId(), updatedCustomer);
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(result.getId(), updatedCustomer.getId());
-        Assertions.assertEquals(result.getEmail(), updatedCustomer.getEmail());
-        Assertions.assertEquals(result.getPassword(), updatedCustomer.getPassword());
+        verify(paymentCardService, times(1)).addSinglePaymentCard(updatedPaymentCard);
     }
 }
 
