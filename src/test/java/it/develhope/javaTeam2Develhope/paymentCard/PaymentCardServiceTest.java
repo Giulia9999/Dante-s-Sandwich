@@ -41,6 +41,24 @@ public class PaymentCardServiceTest {
     }
 
     @Test
+    public void testValidatePaymentCard_NullCardValues() {
+        // Arrange
+        PaymentCard paymentCard = new PaymentCard();
+        paymentCard.setId(1L);
+        paymentCard.setCardNum(null);
+        paymentCard.setBalance(2000);
+        double purchaseAmount = 50.0;
+
+        PaymentCardService paymentCardService = new PaymentCardService(mock(PaymentCardRepo.class));
+
+        // Act and Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> paymentCardService.validatePaymentCard(paymentCard, purchaseAmount));
+
+        assertEquals("Payment card cannot be null.", exception.getMessage());
+    }
+
+    @Test
     public void testValidatePaymentCard_InsufficientBalance() {
         // Arrange
         PaymentCard paymentCard = new PaymentCard();

@@ -21,6 +21,7 @@ public class PaymentCard {
     @NotBlank(message = "mandatory")
     private String cardType;
     @NotNull
+    @Column(unique = true)
     private Long cardNum;
     @NotNull
     private LocalDate cardExpiry;

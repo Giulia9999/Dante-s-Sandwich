@@ -69,6 +69,7 @@ public class CustomerService {
      */
     public CustomerCard addFirstPaymentMethod(PaymentCard paymentCard, Long customerId) throws Exception {
         CustomerCard customerCard = new CustomerCard();
+        paymentCardService.validatePaymentCard(paymentCard);
         customerCard.addPaymentCard(paymentCard);
         paymentCardService.addSinglePaymentCard(paymentCard);
         customerCard.setCustomer(getCustomerById(customerId));
@@ -83,6 +84,7 @@ public class CustomerService {
      */
     public CustomerCard addPaymentMethod(Long customerCardId, PaymentCard paymentCard){
         CustomerCard customerCard = customerCardRepo.getReferenceById(customerCardId);
+        paymentCardService.validatePaymentCard(paymentCard);
         customerCard.addPaymentCard(paymentCard);
         paymentCardService.addSinglePaymentCard(paymentCard);
         return customerCard;
@@ -97,6 +99,7 @@ public class CustomerService {
      */
     public CustomerCard updatePaymentMethod(Long customerCardId,Long paymentCardId, PaymentCard paymentCard){
         CustomerCard customerCard = customerCardRepo.getReferenceById(customerCardId);
+        paymentCardService.validatePaymentCard(paymentCard);
         for (PaymentCard singleCard: customerCard.getPaymentCards()) {
             if(singleCard.getId().equals(paymentCardId)){
                 singleCard.setCardType(paymentCard.getCardType());

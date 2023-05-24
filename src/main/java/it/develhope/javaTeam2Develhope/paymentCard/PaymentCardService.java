@@ -30,13 +30,22 @@ public class PaymentCardService {
 
     public void validatePaymentCard(PaymentCard paymentCard, double purchaseAmount) {
         // Check that the payment card is not null
-        if (paymentCard == null) {
+        if (paymentCard== null || paymentCard.getId() == null || paymentCard.getCardType()==null || paymentCard.getCardNum()==null
+        || paymentCard.getCardHolderName()==null) {
             throw new IllegalArgumentException("Payment card cannot be null.");
         }
 
         // Check that the payment card has sufficient balance to cover the purchase amount
         if (paymentCard.getBalance() < purchaseAmount) {
             throw new IllegalArgumentException("Insufficient balance on payment card.");
+        }
+    }
+
+    public void validatePaymentCard(PaymentCard paymentCard) {
+        // Check that the payment card is not null
+        if (paymentCard== null ||paymentCard.getId() == null || paymentCard.getCardType()==null || paymentCard.getCardNum()==null
+                || paymentCard.getCardHolderName()==null) {
+            throw new IllegalArgumentException("Payment card cannot be null.");
         }
     }
 
