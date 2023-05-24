@@ -14,6 +14,7 @@ import it.develhope.javaTeam2Develhope.order.OrderService;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCardService;
 import it.develhope.javaTeam2Develhope.subscription.SubscriptionService;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
@@ -31,6 +32,27 @@ import static org.mockito.Mockito.*;
 
 @SpringJUnitConfig
 public class CustomerServiceTests {
+        CustomerCardRepo customerCardRepo = mock(CustomerCardRepo.class);
+        PaymentCardService paymentCardService = mock(PaymentCardService.class);
+        CustomerRepo customerRepo = mock(CustomerRepo.class);
+        DigitalPurchaseService digitalPurchaseService = mock(DigitalPurchaseService.class);
+        OrderService orderService = mock(OrderService.class);
+        BookService bookService = mock(BookService.class);
+        SubscriptionService subscriptionService = mock(SubscriptionService.class);
+        BookRepo bookRepo = mock(BookRepo.class);
+        CustomerHistoryRepo customerHistoryRepo = mock(CustomerHistoryRepo.class);
+
+        CustomerService customerService = new CustomerService(
+                customerRepo,
+                paymentCardService,
+                digitalPurchaseService,
+                customerCardRepo,
+                orderService,
+                bookService,
+                subscriptionService,
+                bookRepo,
+                customerHistoryRepo
+        );
     @Test
     public void testUpdatePaymentMethod_ValidPaymentCard() {
         // Arrange
@@ -55,29 +77,7 @@ public class CustomerServiceTests {
         existingPaymentCard.setBalance(50.0);
         customerCard.addPaymentCard(existingPaymentCard);
 
-        CustomerCardRepo customerCardRepo = mock(CustomerCardRepo.class);
-        PaymentCardService paymentCardService = mock(PaymentCardService.class);
         when(customerCardRepo.getReferenceById(customerCardId)).thenReturn(customerCard);
-
-        CustomerRepo customerRepo = mock(CustomerRepo.class);
-        DigitalPurchaseService digitalPurchaseService = mock(DigitalPurchaseService.class);
-        OrderService orderService = mock(OrderService.class);
-        BookService bookService = mock(BookService.class);
-        SubscriptionService subscriptionService = mock(SubscriptionService.class);
-        BookRepo bookRepo = mock(BookRepo.class);
-        CustomerHistoryRepo customerHistoryRepo = mock(CustomerHistoryRepo.class);
-
-        CustomerService customerService = new CustomerService(
-                customerRepo,
-                paymentCardService,
-                digitalPurchaseService,
-                customerCardRepo,
-                orderService,
-                bookService,
-                subscriptionService,
-                bookRepo,
-                customerHistoryRepo
-        );
         // Act
         CustomerCard updatedCustomerCard = customerService.updatePaymentMethod(customerCardId, paymentCardId, paymentCard);
 
@@ -94,6 +94,53 @@ public class CustomerServiceTests {
         Assertions.assertEquals(100.0, updatedPaymentCard.getBalance(), 0.01);
 
         verify(paymentCardService, times(1)).addSinglePaymentCard(updatedPaymentCard);
+    }
+
+
+    @Test
+    public void testRemovePaymentMethod_ValidPaymentMethod() throws Exception {
+        // Arrange
+        Long customerCardId = 1L;
+        Long paymentCardId = 2L;
+
+        CustomerCard customerCard = new CustomerCard();
+        customerCard.setId(customerCardId);
+        PaymentCard paymentCard = new PaymentCard();
+        paymentCard.setId(paymentCardId);
+        customerCard.addPaymentCard(paymentCard);
+
+        when(customerCardRepo.getReferenceById(customerCardId)).thenReturn(customerCard);
+
+        // Act
+        CustomerCard updatedCustomerCard = customerService.removePaymentMethod(customerCardId, paymentCardId);
+
+        // Assert
+        Assertions.assertEquals(customerCardId, updatedCustomerCard.getId());
+        Assertions.assertTrue(updatedCustomerCard.getPaymentCards().isEmpty());
+
+        verify(paymentCardService, times(1)).deletePaymentCard(paymentCardId);
+    }
+
+    @Test
+    public void testRemovePaymentMethod_NonExistingPaymentMethod() throws Exception {
+        // Arrange
+        Long customerCardId = 1L;
+        Long paymentCardId = 2L;
+
+        CustomerCard customerCard = new CustomerCard();
+        customerCard.setId(customerCardId);
+        PaymentCard paymentCard = new PaymentCard();
+        paymentCard.setId(3L);
+        customerCard.addPaymentCard(paymentCard);
+
+        when(customerCardRepo.getReferenceById(customerCardId)).thenReturn(customerCard);
+
+        // Act and Assert
+        Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            customerService.removePaymentMethod(customerCardId, paymentCardId);
+        });
+
+        verify(paymentCardService, times(0)).deletePaymentCard(anyLong());
     }
 }
 
