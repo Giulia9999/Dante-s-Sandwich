@@ -179,6 +179,32 @@ public class BookService {
 
     }
 
+    //DOWNLOAD PDF
+    public Optional<Book> downloadPDF(Long id) throws BookNotFoundException {
+        Optional<Book> optionalBook = bookRepo.findById(id);
+
+        if(optionalBook.isPresent()){
+            Book book = optionalBook.get();
+            return Optional.of(book);
+        } else {
+            throw  new BookNotFoundException("Book not found with id:" + id);
+        }
+    }
+
+    //DOWNLOAD MP3
+    public Optional<Book> downloadMP3(Long id) throws BookNotFoundException {
+        Optional<Book> optionalBook = bookRepo.findById(id);
+
+        if(optionalBook.isPresent()){
+            Book book = optionalBook.get();
+            return Optional.of(book);
+        } else {
+            throw new BookNotFoundException("Book not found with id: " + id);
+        }
+    }
+
+
+
 
 
 }
