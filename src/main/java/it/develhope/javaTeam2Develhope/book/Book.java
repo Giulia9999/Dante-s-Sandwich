@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.lang.NonNull;
 
 
+import java.io.File;
 import java.util.List;
 
 @Data
@@ -42,4 +43,6 @@ public class Book {
     private String imageCoverFilePath;
     @NotNull
     private Boolean isEbook;
+    private File eBook;
+    private File audible;
 }
