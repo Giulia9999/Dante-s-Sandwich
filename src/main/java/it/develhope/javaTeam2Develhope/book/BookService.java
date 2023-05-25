@@ -16,9 +16,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+
 @Service
 public class BookService {
     @Autowired
@@ -137,4 +141,70 @@ public class BookService {
     public void deleteAllBooks() {
         bookRepo.deleteAll();
     }
+
+
+    //UPLOAD and DOWNLOAD METHODS
+
+    //UPLOAD PDF
+    public Book uploadPDF(Long id, File pdfFile) throws IOException, BookNotFoundException {
+        Optional<Book> optionalBook = bookRepo.findById(id);
+
+        if (optionalBook.isPresent()) {
+            Book book = optionalBook.get();
+            FileInputStream fileIS = new FileInputStream(pdfFile);
+            book.setEBook(pdfFile);
+            Book updateBook = bookRepo.save(book);
+            fileIS.close();
+            return updateBook;
+        } else {
+            throw new BookNotFoundException("Book not found with id: " + id);
+        }
+
+    }
+
+    //UPLOAD MP3
+    public Book uploadMP3(Long id, File MP3File) throws IOException, BookNotFoundException {
+        Optional<Book> optionalBook = bookRepo.findById(id);
+
+        if(optionalBook.isPresent()){
+            Book book = optionalBook.get();
+            FileInputStream fileIS = new FileInputStream(MP3File);
+            book.setAudible(MP3File);
+            Book updateBook = bookRepo.save(book);
+            fileIS.close();
+            return updateBook;
+        } else {
+            throw new BookNotFoundException("Book not found with id:" + id);
+        }
+
+    }
+
+    //DOWNLOAD PDF
+    public Optional<Book> downloadPDF(Long id) throws BookNotFoundException {
+        Optional<Book> optionalBook = bookRepo.findById(id);
+
+        if(optionalBook.isPresent()){
+            Book book = optionalBook.get();
+            return Optional.of(book);
+        } else {
+            throw  new BookNotFoundException("Book not found with id:" + id);
+        }
+    }
+
+    //DOWNLOAD MP3
+    public Optional<Book> downloadMP3(Long id) throws BookNotFoundException {
+        Optional<Book> optionalBook = bookRepo.findById(id);
+
+        if(optionalBook.isPresent()){
+            Book book = optionalBook.get();
+            return Optional.of(book);
+        } else {
+            throw new BookNotFoundException("Book not found with id: " + id);
+        }
+    }
+
+
+
+
+
 }
