@@ -162,7 +162,7 @@ public class BookService {
             String fileName = pdf.getOriginalFilename();
             String desiredFolder = "pdfFile/";
             File folder = new File(desiredFolder);
-            if(!folder.exists()){
+            if (!folder.exists()) {
                 folder.mkdir();
             }
             String filePath = desiredFolder + "pdfFile_" + fileName;
@@ -170,7 +170,7 @@ public class BookService {
             Files.copy(pdf.getInputStream(), path);
             System.out.println("File saved at:" + path.toAbsolutePath().toString());
 
-            book.setEBook(new File(path.toAbsolutePath().toString()));
+            book.setEBook(path.toAbsolutePath().toString());
             bookRepo.save(book);
 
             return ResponseEntity.ok("PDF uploaded correctly!");
@@ -183,27 +183,36 @@ public class BookService {
 
     }
 
-    public ResponseEntity<String> uploadMP3(Long id, MultipartFile mp3File) {
+    public ResponseEntity<String> uploadMP3(Long id, MultipartFile mp3) {
 
         try {
             Book book = bookRepo.findById(id).orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
+            if (!mp3.getContentType().equals("audio/mpeg")) {
+                throw new IllegalArgumentException("File must be an MP3 type!");
+            }
+            String fileName = mp3.getOriginalFilename();
+            String desiredFolder = "mp3File/";
+            File folder = new File(desiredFolder);
+            if(!folder.exists()){
+                folder.mkdir();
+            }
+            String filePath = desiredFolder + fileName;
+            Path path = Paths.get(filePath);
+            Files.copy(mp3.getInputStream(), path);
 
-            String fileName = mp3File.getOriginalFilename();
-            String filePath = "mp3File" + fileName;
-            File file = new File(filePath);
-
-            book.setAudible(new File(filePath));
+            // Salva solo il path nel DB
+            book.setAudible(path.toAbsolutePath().toString());
             bookRepo.save(book);
 
-            return ResponseEntity.ok("PDF uploaded correctly!");
+            return ResponseEntity.ok("MP3 uploaded correctly! Path saved for future download.");
 
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR during uploading MP3!");
         } catch (BookNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
 
     }
-
-
 
 
     //DOWNLOAD
@@ -216,7 +225,7 @@ public class BookService {
             String filePath = String.valueOf(book.getEBook());
             File file = new File(filePath);
 
-            if(file.exists()) {
+            if (file.exists()) {
                 Path path = Paths.get(filePath);
                 ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
 
@@ -242,7 +251,7 @@ public class BookService {
 
             if (file.exists()) {
                 Path path = Paths.get(filePath);
-                ByteArrayResource resource =  new ByteArrayResource(Files.readAllBytes(path));
+                ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename" + file.getName());
@@ -257,9 +266,6 @@ public class BookService {
         }
 
     }
-
-
-
 
 
 }
