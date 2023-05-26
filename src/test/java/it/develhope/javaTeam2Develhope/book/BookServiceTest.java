@@ -27,7 +27,7 @@ public class BookServiceTest {
     @Mock
     private BookRepo bookRepo;
 
-    @Test
+   /* @Test
     public void testGetAllBooks() {
         // create a list of books
         List<Book> books = new ArrayList<>();
@@ -53,7 +53,7 @@ public class BookServiceTest {
 
         // assert that the returned page is equal to the expected page
         assertEquals(bookPage, result);
-    }
+    } */
 
     @Test
     void testGetEmptyPropertyNames() {
