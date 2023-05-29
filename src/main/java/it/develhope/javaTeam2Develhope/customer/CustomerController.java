@@ -25,6 +25,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 
 @RestController
 @RequestMapping("/customer")
@@ -101,7 +103,7 @@ public class CustomerController {
   //-----------------------LIBRO DIGITALE------------------------
   @PostMapping("/digitalPurchase/{customerCardId}")
   public ResponseEntity<DigitalPurchaseDTO> purchaseDigital(@PathVariable Long customerCardId,
-                                                            @RequestParam Long bookId) throws ConflictException {
+                                                            @RequestParam Long bookId) throws ConflictException, BookNotFoundException, IOException {
     DigitalPurchase digitalPurchase = customerService.buyDigitalBook(customerCardId,bookId);
     DigitalPurchaseDTO digitalPurchaseDTO = digitalPurchaseMapper.toDto(digitalPurchase);
     return ResponseEntity.status(HttpStatus.CREATED).body(digitalPurchaseDTO);

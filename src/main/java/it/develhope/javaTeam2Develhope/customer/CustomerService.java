@@ -25,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -184,7 +185,7 @@ public class CustomerService {
     }
 
     //--------------------------------LIBRO DIGITALE----------------------------
-    public DigitalPurchase buyDigitalBook(Long customerCardId, Long bookId) throws ConflictException {
+    public DigitalPurchase buyDigitalBook(Long customerCardId, Long bookId) throws ConflictException, BookNotFoundException, IOException {
     DigitalPurchase digitalPurchase = new DigitalPurchase();
     Book book = null;
     try{
@@ -307,14 +308,6 @@ public class CustomerService {
         customer.setAddress(customerDetails.getAddress());
         customer.setEmail(customerDetails.getEmail());
         customer.setPassword(customerDetails.getPassword());
-        // Update the list of orders
-        customer.setOrders(customerDetails.getOrders());
-
-        // Update the list of purchases
-        customer.setPurchases(customerDetails.getPurchases());
-
-        // Update the subscription
-        customer.setSubscription(customerDetails.getSubscription());
         return customerRepo.save(customer);
     }
 

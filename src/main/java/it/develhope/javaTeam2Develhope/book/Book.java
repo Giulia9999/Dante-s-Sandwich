@@ -38,11 +38,9 @@ public class Book {
     private Float price;
     @NotNull
     private Integer numberOfPages;
-    @NotNull
-    private Boolean isInStock;
+    /*private Boolean isInStock;*/
     private String imageCoverFilePath;
-    @NotNull
-    private Boolean isEbook;
+    /*private Boolean isEbook;*/
     private String eBook;
     private String audible;
 }
