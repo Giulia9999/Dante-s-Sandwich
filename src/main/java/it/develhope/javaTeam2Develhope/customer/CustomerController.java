@@ -17,6 +17,7 @@ import it.develhope.javaTeam2Develhope.paymentCard.PaymentCardService;
 import it.develhope.javaTeam2Develhope.subscription.Subscription;
 import it.develhope.javaTeam2Develhope.subscription.dto.SubscriptionDTO;
 import it.develhope.javaTeam2Develhope.subscription.dto.SubscriptionMapper;
+import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,7 +95,7 @@ public class CustomerController {
   //-----------------------LIBRO FISICO----------------------
   @PostMapping("/orderBook/{customerCardId}")
   public ResponseEntity<OrderDTO> order(@PathVariable Long customerCardId,
-                                        @RequestParam Long bookId) throws BookNotFoundException, ConflictException {
+                                        @RequestParam Long bookId) throws BookNotFoundException, ConflictException, MessagingException {
     Order order = customerService.orderBook(customerCardId, bookId);
     OrderDTO orderDTO = orderMapper.toDto(order);
     return ResponseEntity.status(HttpStatus.CREATED).body(orderDTO);

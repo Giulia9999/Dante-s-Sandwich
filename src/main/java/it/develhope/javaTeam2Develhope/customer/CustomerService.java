@@ -17,6 +17,7 @@ import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCardService;
 import it.develhope.javaTeam2Develhope.subscription.Subscription;
 import it.develhope.javaTeam2Develhope.subscription.SubscriptionService;
+import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
@@ -147,7 +148,7 @@ public class CustomerService {
 
 
     //-----------------------------LIBRO FISICO-----------------------
-    public Order orderBook(Long customerCardId, Long bookId) throws ConflictException {
+    public Order orderBook(Long customerCardId, Long bookId) throws ConflictException, MessagingException {
         Order order = new Order();
         float shippingCost = 2.5f;
         Book book = null;
@@ -170,7 +171,7 @@ public class CustomerService {
             }
             order.setTotalPrice(book.getPrice() + shippingCost);
             orderService.addSingleOrder(order);
-
+            notificationService.sendOrderNotification(customerCard.getCustomer().getEmail());
             Customer customer = customerCard.getCustomer();
             Optional<CustomerHistory> optionalCustomerHistory = customerHistoryRepo.findById(customer.getId());
             //Add order to customer history
