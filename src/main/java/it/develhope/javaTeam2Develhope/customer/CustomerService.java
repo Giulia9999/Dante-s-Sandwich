@@ -10,6 +10,7 @@ import it.develhope.javaTeam2Develhope.customer.customerHistory.CustomerHistory;
 import it.develhope.javaTeam2Develhope.customer.customerHistory.CustomerHistoryRepo;
 import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchase;
 import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchaseService;
+import it.develhope.javaTeam2Develhope.notifications.NotificationService;
 import it.develhope.javaTeam2Develhope.order.Order;
 import it.develhope.javaTeam2Develhope.order.OrderService;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
@@ -44,10 +45,11 @@ public class CustomerService {
     private final SubscriptionService subscriptionService;
     private final BookRepo bookRepo;
     private final CustomerHistoryRepo customerHistoryRepo;
+    private final NotificationService notificationService;
     public CustomerService(CustomerRepo customerRepo, PaymentCardService paymentCardService,
                            DigitalPurchaseService digitalPurchaseService, CustomerCardRepo customerCardRepo,
                            OrderService orderService, BookService bookService, SubscriptionService subscriptionService,
-                           BookRepo bookRepo, CustomerHistoryRepo customerHistoryRepo) {
+                           BookRepo bookRepo, CustomerHistoryRepo customerHistoryRepo, NotificationService notificationService) {
         this.customerRepo = customerRepo;
         this.paymentCardService = paymentCardService;
         this.digitalPurchaseService = digitalPurchaseService;
@@ -57,6 +59,7 @@ public class CustomerService {
         this.subscriptionService = subscriptionService;
         this.bookRepo = bookRepo;
         this.customerHistoryRepo = customerHistoryRepo;
+        this.notificationService = notificationService;
     }
 
     //---------------------METODI GESTIONE CARTE DI PAGAMENTO---------------
