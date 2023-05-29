@@ -16,6 +16,9 @@ public class DigitalPurchaseMapper {
     }
 
     public DigitalPurchaseDTO toDto(DigitalPurchase digitalPurchase) {
-        return modelMapper.map(digitalPurchase, DigitalPurchaseDTO.class);
+        DigitalPurchaseDTO digitalPurchaseDTO = modelMapper.map(digitalPurchase, DigitalPurchaseDTO.class);
+        digitalPurchaseDTO.setEBook(digitalPurchase.getPurchasedBook().getEBook());
+        digitalPurchaseDTO.setAudible(digitalPurchase.getPurchasedBook().getAudible());
+        return digitalPurchaseDTO;
     }
 }
