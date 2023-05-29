@@ -16,6 +16,21 @@ spring:
     multipart:
       max-file-size: 128MB
       max-request-size: 128MB
+  mail:
+    host: smtp.sendgrid.net
+    port: 587
+    username: apikey
+    password: *
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+
+
 
     email: dantessandwich@gmail.com
 
