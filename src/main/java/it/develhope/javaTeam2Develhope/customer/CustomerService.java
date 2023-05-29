@@ -189,7 +189,7 @@ public class CustomerService {
     }
 
     //--------------------------------LIBRO DIGITALE----------------------------
-    public DigitalPurchase buyDigitalBook(Long customerCardId, Long bookId) throws ConflictException, BookNotFoundException, IOException {
+    public DigitalPurchase buyDigitalBook(Long customerCardId, Long bookId) throws ConflictException, BookNotFoundException, IOException, MessagingException {
     DigitalPurchase digitalPurchase = new DigitalPurchase();
     Book book = null;
     try{
@@ -209,6 +209,7 @@ public class CustomerService {
         }
         digitalPurchase.setTotalPrice(book.getPrice());
         digitalPurchaseService.addSingleDigitalPurchase(digitalPurchase);
+        notificationService.sendDigitalPurchaseNotification(customerCard.getCustomer().getEmail());
         Customer customer = customerCard.getCustomer();
         Optional<CustomerHistory> optionalCustomerHistory = customerHistoryRepo.findById(customer.getId());
         //Add purchase to customer history

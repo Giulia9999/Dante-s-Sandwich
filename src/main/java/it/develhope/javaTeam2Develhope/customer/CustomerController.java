@@ -104,7 +104,7 @@ public class CustomerController {
   //-----------------------LIBRO DIGITALE------------------------
   @PostMapping("/digitalPurchase/{customerCardId}")
   public ResponseEntity<DigitalPurchaseDTO> purchaseDigital(@PathVariable Long customerCardId,
-                                                            @RequestParam Long bookId) throws ConflictException, BookNotFoundException, IOException {
+                                                            @RequestParam Long bookId) throws ConflictException, BookNotFoundException, IOException, MessagingException {
     DigitalPurchase digitalPurchase = customerService.buyDigitalBook(customerCardId,bookId);
     DigitalPurchaseDTO digitalPurchaseDTO = digitalPurchaseMapper.toDto(digitalPurchase);
     return ResponseEntity.status(HttpStatus.CREATED).body(digitalPurchaseDTO);
