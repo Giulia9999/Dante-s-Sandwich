@@ -114,7 +114,7 @@ public class CustomerController {
   @PostMapping("/subscription/{customerCardId}")
   public ResponseEntity<SubscriptionDTO> subscription(@PathVariable Long customerCardId,
                                                       @RequestParam(required = false) Boolean isCanceled,
-                                                      @RequestParam(required = false) Boolean isRenewed) throws ConflictException {
+                                                      @RequestParam(required = false) Boolean isRenewed) throws ConflictException, MessagingException {
     if(isRenewed==null) isRenewed=false;
     if(isCanceled==null) isCanceled=false;
     Subscription subscription = customerService.getSubscription(customerCardId,isCanceled, isRenewed);

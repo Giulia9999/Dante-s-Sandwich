@@ -229,7 +229,7 @@ public class CustomerService {
     }
 
     //--------------------------------ABBONAMENTO EBOOK------------------------------
-    public Subscription getSubscription(Long customerCardId, Boolean isCanceled, Boolean isRenewed) throws ConflictException {
+    public Subscription getSubscription(Long customerCardId, Boolean isCanceled, Boolean isRenewed) throws ConflictException, MessagingException {
         Subscription subscription = new Subscription();
         float monthlyPrice = 5.99f;
         CustomerCard customerCard = customerCardRepo.getReferenceById(customerCardId);
@@ -254,6 +254,7 @@ public class CustomerService {
             paymentCardService.validatePaymentCard(card, monthlyPrice);
         }
         subscriptionService.addSingleSubscription(subscription);
+        notificationService.sendSubscriptionNotification(customerCard.getCustomer().getEmail());
         Customer customer = customerCard.getCustomer();
         Optional<CustomerHistory> optionalCustomerHistory = customerHistoryRepo.findById(customer.getId());
         //Add subscription to customer history
