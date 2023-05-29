@@ -68,9 +68,7 @@ public class BookServiceTest {
         book.setYear(2022);
         book.setPrice(10.99f);
         book.setNumberOfPages(200);
-        book.setIsInStock(true);
         book.setImageCoverFilePath(null);
-        book.setIsEbook(false);
 
         // Act
         String[] emptyPropertyNames = bookService.getEmptyPropertyNames(book);
