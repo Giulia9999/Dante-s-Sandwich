@@ -1,5 +1,9 @@
 package it.develhope.javaTeam2Develhope.book;
 
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import io.micrometer.common.util.StringUtils;
 import jakarta.validation.Valid;
@@ -11,14 +15,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.sound.midi.Soundbank;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -143,68 +150,122 @@ public class BookService {
     }
 
 
-    //UPLOAD and DOWNLOAD METHODS
+    //UPLOAD
 
-    //UPLOAD PDF
-    public Book uploadPDF(Long id, File pdfFile) throws IOException, BookNotFoundException {
-        Optional<Book> optionalBook = bookRepo.findById(id);
+    public ResponseEntity<String> uploadPDF(Long id, MultipartFile pdf) {
 
-        if (optionalBook.isPresent()) {
-            Book book = optionalBook.get();
-            FileInputStream fileIS = new FileInputStream(pdfFile);
-            book.setEBook(pdfFile);
-            Book updateBook = bookRepo.save(book);
-            fileIS.close();
-            return updateBook;
-        } else {
-            throw new BookNotFoundException("Book not found with id: " + id);
+        try {
+            Book book = bookRepo.findById(id).orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
+            if (!pdf.getContentType().equals("application/pdf")) {
+                throw new IllegalArgumentException("File must be a PDF type!");
+            }
+            String fileName = pdf.getOriginalFilename();
+            String desiredFolder = "pdfFile/";
+            File folder = new File(desiredFolder);
+            if (!folder.exists()) {
+                folder.mkdir();
+            }
+            String filePath = desiredFolder + "pdfFile_" + fileName;
+            Path path = Paths.get(filePath);
+            Files.copy(pdf.getInputStream(), path);
+            System.out.println("File saved at:" + path.toAbsolutePath().toString());
+
+            book.setEBook(path.toAbsolutePath().toString());
+            bookRepo.save(book);
+
+            return ResponseEntity.ok("PDF uploaded correctly!");
+
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR during uploading PDF!");
+        } catch (BookNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
 
     }
 
-    //UPLOAD MP3
-    public Book uploadMP3(Long id, File MP3File) throws IOException, BookNotFoundException {
-        Optional<Book> optionalBook = bookRepo.findById(id);
+    public ResponseEntity<String> uploadMP3(Long id, MultipartFile mp3) {
 
-        if(optionalBook.isPresent()){
-            Book book = optionalBook.get();
-            FileInputStream fileIS = new FileInputStream(MP3File);
-            book.setAudible(MP3File);
-            Book updateBook = bookRepo.save(book);
-            fileIS.close();
-            return updateBook;
-        } else {
-            throw new BookNotFoundException("Book not found with id:" + id);
+        try {
+            Book book = bookRepo.findById(id).orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
+            if (!mp3.getContentType().equals("audio/mpeg")) {
+                throw new IllegalArgumentException("File must be an MP3 type!");
+            }
+            String fileName = mp3.getOriginalFilename();
+            String desiredFolder = "mp3File/";
+            File folder = new File(desiredFolder);
+            if(!folder.exists()){
+                folder.mkdir();
+            }
+            String filePath = desiredFolder + fileName;
+            Path path = Paths.get(filePath);
+            Files.copy(mp3.getInputStream(), path);
+
+            // Salva solo il path nel DB
+            book.setAudible(path.toAbsolutePath().toString());
+            bookRepo.save(book);
+
+            return ResponseEntity.ok("MP3 uploaded correctly! Path saved for future download.");
+
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR during uploading MP3!");
+        } catch (BookNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
 
     }
 
-    //DOWNLOAD PDF
-    public Optional<Book> downloadPDF(Long id) throws BookNotFoundException {
-        Optional<Book> optionalBook = bookRepo.findById(id);
 
-        if(optionalBook.isPresent()){
-            Book book = optionalBook.get();
-            return Optional.of(book);
-        } else {
-            throw  new BookNotFoundException("Book not found with id:" + id);
+    //DOWNLOAD
+
+
+    public ResponseEntity<Resource> downloadPDF(Long id) throws BookNotFoundException, IOException {
+        try {
+            Book book = bookRepo.findById(id).orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
+
+            String filePath = String.valueOf(book.getEBook());
+            File file = new File(filePath);
+
+            if (file.exists()) {
+                Path path = Paths.get(filePath);
+                ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName());
+
+                return ResponseEntity.ok().headers(headers).contentLength(file.length()).body(resource);
+            } else {
+                throw new BookNotFoundException("PDF file not found for book with id: " + id);
+            }
+        } catch (IOException e) {
+            throw new IOException("Error during downloading PDF!", e);
         }
     }
 
-    //DOWNLOAD MP3
-    public Optional<Book> downloadMP3(Long id) throws BookNotFoundException {
-        Optional<Book> optionalBook = bookRepo.findById(id);
 
-        if(optionalBook.isPresent()){
-            Book book = optionalBook.get();
-            return Optional.of(book);
-        } else {
-            throw new BookNotFoundException("Book not found with id: " + id);
+    public ResponseEntity<Resource> downloadMP3(Long id) throws BookNotFoundException, IOException {
+        try {
+            Book book = bookRepo.findById(id).orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
+
+            String filePath = String.valueOf(book.getAudible());
+            File file = new File(filePath);
+
+            if (file.exists()) {
+                Path path = Paths.get(filePath);
+                ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename" + file.getName());
+                headers.add(HttpHeaders.CONTENT_TYPE, "audio/mpeg");
+
+                return ResponseEntity.ok().headers(headers).contentLength(file.length()).body(resource);
+            } else {
+                throw new BookNotFoundException("MP3 file not found for book with id: " + id);
+            }
+        } catch (IOException e) {
+            throw new IOException("Error during downloading MP3!", e);
         }
+
     }
-
-
-
 
 
 }

@@ -43,6 +43,6 @@ public class Book {
     private String imageCoverFilePath;
     @NotNull
     private Boolean isEbook;
-    private File eBook;
-    private File audible;
+    private String eBook;
+    private String audible;
 }
