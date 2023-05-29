@@ -26,9 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class BookService {
@@ -153,19 +151,21 @@ public class BookService {
     //UPLOAD
 
     public ResponseEntity<String> uploadPDF(Long id, MultipartFile pdf) {
-
         try {
             Book book = bookRepo.findById(id).orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
-            if (!pdf.getContentType().equals("application/pdf")) {
+            if (!Objects.equals(pdf.getContentType(), "application/pdf")) {
                 throw new IllegalArgumentException("File must be a PDF type!");
             }
-            String fileName = pdf.getOriginalFilename();
+            String originalFileName = pdf.getOriginalFilename();
+            assert originalFileName != null;
+            String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+            String randomFileName = UUID.randomUUID() + fileExtension;
             String desiredFolder = "pdfFile/";
             File folder = new File(desiredFolder);
             if (!folder.exists()) {
                 folder.mkdir();
             }
-            String filePath = desiredFolder + "pdfFile_" + fileName;
+            String filePath = desiredFolder + randomFileName;
             Path path = Paths.get(filePath);
             Files.copy(pdf.getInputStream(), path);
             System.out.println("File saved at:" + path.toAbsolutePath().toString());
@@ -174,20 +174,18 @@ public class BookService {
             bookRepo.save(book);
 
             return ResponseEntity.ok("PDF uploaded correctly!");
-
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR during uploading PDF!");
         } catch (BookNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-
     }
 
-    public ResponseEntity<String> uploadMP3(Long id, MultipartFile mp3) {
+    /*public ResponseEntity<String> uploadMP3(Long id, MultipartFile mp3) {
 
         try {
             Book book = bookRepo.findById(id).orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
-            if (!mp3.getContentType().equals("audio/mpeg")) {
+            if (!Objects.equals(mp3.getContentType(), "audio/mpeg")) {
                 throw new IllegalArgumentException("File must be an MP3 type!");
             }
             String fileName = mp3.getOriginalFilename();
@@ -212,6 +210,45 @@ public class BookService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
 
+    }*/
+
+    public ResponseEntity<String> uploadMP3(Long id, MultipartFile mp3) {
+        try {
+            Book book = bookRepo.findById(id).orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
+            if (!Objects.equals(mp3.getContentType(), "audio/mpeg")) {
+                throw new IllegalArgumentException("File must be an MP3 type!");
+            }
+            String originalFileName = mp3.getOriginalFilename();
+            assert originalFileName != null;
+            String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+            String randomFileName = UUID.randomUUID() + fileExtension;
+            String desiredFolder = "mp3File/";
+            Path folderPath = Paths.get(desiredFolder);
+            if (!Files.exists(folderPath)) {
+                Files.createDirectories(folderPath);
+            }
+            String filePath = desiredFolder + randomFileName;
+            Path path = Paths.get(filePath);
+            if (Files.exists(path)) {
+                Files.delete(path); // Delete the existing file
+            }
+            Files.copy(mp3.getInputStream(), path);
+
+            // Save only the path in the DB
+            book.setAudible(path.toAbsolutePath().toString());
+            bookRepo.save(book);
+
+            return ResponseEntity.ok("MP3 uploaded correctly! Path saved for future download.");
+        } catch (IOException e) {
+            // Handle specific IO exceptions
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR during uploading MP3: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            // Handle invalid file type exception
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (BookNotFoundException e) {
+            // Handle book not found exception
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
 

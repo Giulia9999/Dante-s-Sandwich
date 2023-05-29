@@ -47,11 +47,4 @@ public class Customer {
     @NotBlank(message = "mandatory")
     private String address;
     private LocalDate dateOfSubscription;
-    @OneToMany
-    private List<DigitalPurchase> purchases;
-    @OneToMany
-    private List<Order> orders;
-    @OneToOne
-    private Subscription subscription;
-
 }

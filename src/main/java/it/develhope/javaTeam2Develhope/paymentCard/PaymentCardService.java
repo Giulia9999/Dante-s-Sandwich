@@ -30,7 +30,7 @@ public class PaymentCardService {
 
     public void validatePaymentCard(PaymentCard paymentCard, double purchaseAmount) {
         // Check that the payment card is not null
-        if (paymentCard== null || paymentCard.getId() == null || paymentCard.getCardType()==null || paymentCard.getCardNum()==null
+        if (paymentCard== null || paymentCard.getCardType()==null || paymentCard.getCardNum()==null
         || paymentCard.getCardHolderName()==null) {
             throw new IllegalArgumentException("Payment card cannot be null.");
         }
@@ -43,7 +43,7 @@ public class PaymentCardService {
 
     public void validatePaymentCard(PaymentCard paymentCard) {
         // Check that the payment card is not null
-        if (paymentCard== null ||paymentCard.getId() == null || paymentCard.getCardType()==null || paymentCard.getCardNum()==null
+        if (paymentCard== null || paymentCard.getCardType()==null || paymentCard.getCardNum()==null
                 || paymentCard.getCardHolderName()==null) {
             throw new IllegalArgumentException("Payment card cannot be null.");
         }
