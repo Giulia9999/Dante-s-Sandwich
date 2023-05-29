@@ -270,7 +270,7 @@ public class CustomerService {
 
 
     //---------------------METODI CRUD---------------------
-    public Customer createCustomer(Customer customer) throws ConflictException {
+    public Customer createCustomer(Customer customer) throws ConflictException, MessagingException {
         Optional<Customer> existingCustomer = Optional.ofNullable(customerRepo.findByEmail(customer.getEmail()));
         if (existingCustomer.isPresent()) {
             throw new ConflictException("A customer with this email already exists");
@@ -279,6 +279,7 @@ public class CustomerService {
         String passwordHash = generatePasswordHash(customer.getPassword(), passwordSalt);
         customer.setPasswordSalt(passwordSalt);
         customer.setPasswordHash(passwordHash);
+        notificationService.sendWelcome(customer.getEmail());
         return customerRepo.save(customer);
     }
 
