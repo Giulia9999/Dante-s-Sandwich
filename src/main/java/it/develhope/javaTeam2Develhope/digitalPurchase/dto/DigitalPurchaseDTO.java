@@ -14,4 +14,6 @@ public class DigitalPurchaseDTO {
     private LocalDateTime dateOfPurchase;
     private String details;
     private float totalPrice;
+    private String eBook;
+    private String audible;
 }

@@ -216,6 +216,8 @@ public class CustomerService {
             customerHistory.setCustomer(customer);
         }
         customerHistory.getPurchases().add(digitalPurchase);
+        bookService.downloadPDF(book.getId());
+        bookService.downloadMP3(book.getId());
         customerHistoryRepo.save(customerHistory);
     }
     return digitalPurchase;
