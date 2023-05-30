@@ -10,12 +10,14 @@ import it.develhope.javaTeam2Develhope.customer.customerHistory.CustomerHistory;
 import it.develhope.javaTeam2Develhope.customer.customerHistory.CustomerHistoryRepo;
 import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchase;
 import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchaseService;
+import it.develhope.javaTeam2Develhope.notifications.NotificationService;
 import it.develhope.javaTeam2Develhope.order.Order;
 import it.develhope.javaTeam2Develhope.order.OrderService;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCardService;
 import it.develhope.javaTeam2Develhope.subscription.Subscription;
 import it.develhope.javaTeam2Develhope.subscription.SubscriptionService;
+import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
@@ -44,10 +46,11 @@ public class CustomerService {
     private final SubscriptionService subscriptionService;
     private final BookRepo bookRepo;
     private final CustomerHistoryRepo customerHistoryRepo;
+    private final NotificationService notificationService;
     public CustomerService(CustomerRepo customerRepo, PaymentCardService paymentCardService,
                            DigitalPurchaseService digitalPurchaseService, CustomerCardRepo customerCardRepo,
                            OrderService orderService, BookService bookService, SubscriptionService subscriptionService,
-                           BookRepo bookRepo, CustomerHistoryRepo customerHistoryRepo) {
+                           BookRepo bookRepo, CustomerHistoryRepo customerHistoryRepo, NotificationService notificationService) {
         this.customerRepo = customerRepo;
         this.paymentCardService = paymentCardService;
         this.digitalPurchaseService = digitalPurchaseService;
@@ -57,6 +60,7 @@ public class CustomerService {
         this.subscriptionService = subscriptionService;
         this.bookRepo = bookRepo;
         this.customerHistoryRepo = customerHistoryRepo;
+        this.notificationService = notificationService;
     }
 
     //---------------------METODI GESTIONE CARTE DI PAGAMENTO---------------
@@ -144,7 +148,7 @@ public class CustomerService {
 
 
     //-----------------------------LIBRO FISICO-----------------------
-    public Order orderBook(Long customerCardId, Long bookId) throws ConflictException {
+    public Order orderBook(Long customerCardId, Long bookId) throws ConflictException, MessagingException {
         Order order = new Order();
         float shippingCost = 2.5f;
         Book book = null;
@@ -167,7 +171,7 @@ public class CustomerService {
             }
             order.setTotalPrice(book.getPrice() + shippingCost);
             orderService.addSingleOrder(order);
-
+            notificationService.sendOrderNotification(customerCard.getCustomer().getEmail());
             Customer customer = customerCard.getCustomer();
             Optional<CustomerHistory> optionalCustomerHistory = customerHistoryRepo.findById(customer.getId());
             //Add order to customer history
@@ -185,7 +189,7 @@ public class CustomerService {
     }
 
     //--------------------------------LIBRO DIGITALE----------------------------
-    public DigitalPurchase buyDigitalBook(Long customerCardId, Long bookId) throws ConflictException, BookNotFoundException, IOException {
+    public DigitalPurchase buyDigitalBook(Long customerCardId, Long bookId) throws ConflictException, BookNotFoundException, IOException, MessagingException {
     DigitalPurchase digitalPurchase = new DigitalPurchase();
     Book book = null;
     try{
@@ -205,6 +209,7 @@ public class CustomerService {
         }
         digitalPurchase.setTotalPrice(book.getPrice());
         digitalPurchaseService.addSingleDigitalPurchase(digitalPurchase);
+        notificationService.sendDigitalPurchaseNotification(customerCard.getCustomer().getEmail());
         Customer customer = customerCard.getCustomer();
         Optional<CustomerHistory> optionalCustomerHistory = customerHistoryRepo.findById(customer.getId());
         //Add purchase to customer history
@@ -224,7 +229,7 @@ public class CustomerService {
     }
 
     //--------------------------------ABBONAMENTO EBOOK------------------------------
-    public Subscription getSubscription(Long customerCardId, Boolean isCanceled, Boolean isRenewed) throws ConflictException {
+    public Subscription getSubscription(Long customerCardId, Boolean isCanceled, Boolean isRenewed) throws ConflictException, MessagingException {
         Subscription subscription = new Subscription();
         float monthlyPrice = 5.99f;
         CustomerCard customerCard = customerCardRepo.getReferenceById(customerCardId);
@@ -249,6 +254,7 @@ public class CustomerService {
             paymentCardService.validatePaymentCard(card, monthlyPrice);
         }
         subscriptionService.addSingleSubscription(subscription);
+        notificationService.sendSubscriptionNotification(customerCard.getCustomer().getEmail());
         Customer customer = customerCard.getCustomer();
         Optional<CustomerHistory> optionalCustomerHistory = customerHistoryRepo.findById(customer.getId());
         //Add subscription to customer history
@@ -266,7 +272,7 @@ public class CustomerService {
 
 
     //---------------------METODI CRUD---------------------
-    public Customer createCustomer(Customer customer) throws ConflictException {
+    public Customer createCustomer(Customer customer) throws ConflictException, MessagingException {
         Optional<Customer> existingCustomer = Optional.ofNullable(customerRepo.findByEmail(customer.getEmail()));
         if (existingCustomer.isPresent()) {
             throw new ConflictException("A customer with this email already exists");
@@ -275,6 +281,7 @@ public class CustomerService {
         String passwordHash = generatePasswordHash(customer.getPassword(), passwordSalt);
         customer.setPasswordSalt(passwordSalt);
         customer.setPasswordHash(passwordHash);
+        notificationService.sendWelcome(customer.getEmail());
         return customerRepo.save(customer);
     }
 

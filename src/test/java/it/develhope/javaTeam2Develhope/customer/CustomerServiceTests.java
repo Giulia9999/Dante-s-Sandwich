@@ -6,6 +6,7 @@ import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCard;
 import it.develhope.javaTeam2Develhope.customer.customerCard.CustomerCardRepo;
 import it.develhope.javaTeam2Develhope.customer.customerHistory.CustomerHistoryRepo;
 import it.develhope.javaTeam2Develhope.digitalPurchase.DigitalPurchaseService;
+import it.develhope.javaTeam2Develhope.notifications.NotificationService;
 import it.develhope.javaTeam2Develhope.order.OrderService;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCard;
 import it.develhope.javaTeam2Develhope.paymentCard.PaymentCardService;
@@ -31,6 +32,7 @@ public class CustomerServiceTests {
         SubscriptionService subscriptionService = mock(SubscriptionService.class);
         BookRepo bookRepo = mock(BookRepo.class);
         CustomerHistoryRepo customerHistoryRepo = mock(CustomerHistoryRepo.class);
+        NotificationService notificationService = mock(NotificationService.class);
 
         CustomerService customerService = new CustomerService(
                 customerRepo,
@@ -41,7 +43,7 @@ public class CustomerServiceTests {
                 bookService,
                 subscriptionService,
                 bookRepo,
-                customerHistoryRepo);
+                customerHistoryRepo, notificationService);
     @Test
     public void testUpdatePaymentMethod_ValidPaymentCard() {
         // Arrange
