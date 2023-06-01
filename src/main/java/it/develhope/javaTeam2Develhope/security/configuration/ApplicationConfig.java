@@ -2,7 +2,6 @@ package it.develhope.javaTeam2Develhope.security.configuration;
 
 import it.develhope.javaTeam2Develhope.admin.AdminRepo;
 import it.develhope.javaTeam2Develhope.customer.CustomerRepo;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -23,8 +23,8 @@ public class SecurityConfiguration {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize->authorize
-                        .requestMatchers("/admin/auth").hasAnyRole("ADMIN")
-                        .requestMatchers("/customer/auth").hasAnyRole("READER")
+                        .requestMatchers("/auth/admin/**").hasAnyRole("ADMIN")
+                        .requestMatchers("/auth/customer/**").hasAnyRole("READER")
                         .anyRequest()
                         .authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

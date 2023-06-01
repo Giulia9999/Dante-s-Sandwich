@@ -6,7 +6,6 @@ import it.develhope.javaTeam2Develhope.customer.Customer;
 import it.develhope.javaTeam2Develhope.customer.CustomerRepo;
 import it.develhope.javaTeam2Develhope.security.configuration.JWTService;
 import it.develhope.javaTeam2Develhope.userRoles.Roles;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

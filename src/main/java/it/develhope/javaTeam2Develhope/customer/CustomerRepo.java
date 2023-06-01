@@ -1,6 +1,5 @@
 package it.develhope.javaTeam2Develhope.customer;
 
-import it.develhope.javaTeam2Develhope.admin.Admin;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
