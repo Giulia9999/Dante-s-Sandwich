@@ -1,6 +1,6 @@
 package it.develhope.javaTeam2Develhope.admin;
 
-import it.develhope.javaTeam2Develhope.customer.Roles;
+import it.develhope.javaTeam2Develhope.userRoles.Roles;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

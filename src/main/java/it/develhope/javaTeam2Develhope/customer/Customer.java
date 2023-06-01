@@ -1,4 +1,5 @@
 package it.develhope.javaTeam2Develhope.customer;
+import it.develhope.javaTeam2Develhope.userRoles.Roles;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
