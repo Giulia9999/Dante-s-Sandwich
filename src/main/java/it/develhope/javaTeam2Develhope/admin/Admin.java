@@ -1,7 +1,7 @@
-package it.develhope.javaTeam2Develhope.customer;
+package it.develhope.javaTeam2Develhope.admin;
+
+import it.develhope.javaTeam2Develhope.customer.Roles;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,38 +9,27 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
+@Entity
+@Table
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table
-public class Customer implements UserDetails {
+public class Admin implements UserDetails {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue
+    private Integer id;
+    private String firstname;
+    private String lastname;
+    private String username;
+    private String email;
+    private String password;
+
     @Enumerated(EnumType.STRING)
     private Roles role;
-    @NotBlank(message = "mandatory")
-    private String name;
-    @NotBlank(message = "mandatory")
-    private String surname;
-    @NotBlank(message = "mandatory")
-    @Column(unique = true)
-    private String username;
-    @NotBlank(message = "mandatory")
-    @Column(unique = true)
-    private String email;
-    @NotBlank(message = "mandatory")
-    private String password;
-    @NotNull
-    private LocalDate birthday;
-    @NotBlank(message = "mandatory")
-    private String address;
-    private LocalDate dateOfSubscription;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -77,3 +66,4 @@ public class Customer implements UserDetails {
         return true;
     }
 }
+

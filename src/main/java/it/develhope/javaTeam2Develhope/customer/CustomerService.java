@@ -277,10 +277,6 @@ public class CustomerService {
         if (existingCustomer.isPresent()) {
             throw new ConflictException("A customer with this email already exists");
         }
-        String passwordSalt = generatePasswordSalt();
-        String passwordHash = generatePasswordHash(customer.getPassword(), passwordSalt);
-        customer.setPasswordSalt(passwordSalt);
-        customer.setPasswordHash(passwordHash);
         notificationService.sendWelcome(customer.getEmail());
         return customerRepo.save(customer);
     }
@@ -329,7 +325,7 @@ public class CustomerService {
         return true;
     }
 
-    private String generatePasswordSalt() {
+    /*private String generatePasswordSalt() {
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
         random.nextBytes(salt);
@@ -353,7 +349,7 @@ public class CustomerService {
             e.printStackTrace();
             return null;
         }
-    }
+    }*/
 
 }
 
