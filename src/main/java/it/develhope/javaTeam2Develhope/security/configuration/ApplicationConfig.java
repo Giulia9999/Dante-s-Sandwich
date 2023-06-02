@@ -5,6 +5,7 @@ import it.develhope.javaTeam2Develhope.customer.CustomerRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -22,6 +23,7 @@ public class ApplicationConfig {
     private CustomerRepo customerRepo;
 
     @Bean
+    @Primary
     public UserDetailsService adminDetailsService() {
         return username -> adminRepo.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Admin not found"));
@@ -34,6 +36,7 @@ public class ApplicationConfig {
     }
 
     @Bean
+    @Primary
     public DaoAuthenticationProvider adminAuthenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(adminDetailsService());
