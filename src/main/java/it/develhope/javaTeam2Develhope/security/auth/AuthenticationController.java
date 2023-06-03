@@ -1,5 +1,7 @@
 package it.develhope.javaTeam2Develhope.security.auth;
 
+import it.develhope.javaTeam2Develhope.customer.ConflictException;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +23,7 @@ public class AuthenticationController {
     @PostMapping("/admin/register")
     public ResponseEntity<AuthenticationResponse> registerAdmin(
             @RequestBody RegisterRequest request
-    ) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    ) throws NoSuchAlgorithmException, InvalidKeySpecException, ConflictException, MessagingException {
         return ResponseEntity.ok(service.registerAdmin(request));
     }
 
@@ -36,7 +38,7 @@ public class AuthenticationController {
     @PostMapping("/customer/register")
     public ResponseEntity<AuthenticationResponse> registerCustomer(
             @RequestBody RegisterRequest request
-    ) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    ) throws NoSuchAlgorithmException, InvalidKeySpecException, ConflictException, MessagingException {
         return ResponseEntity.ok(service.registerCustomer(request));
     }
 

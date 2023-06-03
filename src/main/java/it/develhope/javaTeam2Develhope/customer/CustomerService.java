@@ -36,7 +36,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 @Service
-public class CustomerService {
+public class CustomerService{
     private final CustomerRepo customerRepo;
     private final PaymentCardService paymentCardService;
     private final DigitalPurchaseService digitalPurchaseService;
@@ -323,6 +323,11 @@ public class CustomerService {
         }
         customerRepo.deleteById(id);
         return true;
+    }
+
+
+    public Optional<Customer> findByUsername(String username) {
+        return customerRepo.findByUsername(username);
     }
 
     /*private String generatePasswordSalt() {

@@ -1,7 +1,8 @@
 package it.develhope.javaTeam2Develhope.customer;
-import it.develhope.javaTeam2Develhope.userRoles.Roles;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,8 +25,9 @@ public class Customer implements UserDetails {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @Enumerated(EnumType.STRING)
+    @JsonIgnore
     private Roles role;
-    @NotBlank(message = "mandatory")
+    @NotEmpty(message = "mandatory")
     private String name;
     @NotBlank(message = "mandatory")
     private String surname;
@@ -37,9 +39,7 @@ public class Customer implements UserDetails {
     private String email;
     @NotBlank(message = "mandatory")
     private String password;
-    @NotNull
     private LocalDate birthday;
-    @NotBlank(message = "mandatory")
     private String address;
     private LocalDate dateOfSubscription;
 

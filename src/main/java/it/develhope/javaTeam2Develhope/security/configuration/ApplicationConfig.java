@@ -1,11 +1,9 @@
 package it.develhope.javaTeam2Develhope.security.configuration;
 
-import it.develhope.javaTeam2Develhope.admin.AdminRepo;
 import it.develhope.javaTeam2Develhope.customer.CustomerRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -16,38 +14,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class ApplicationConfig {
-    @Autowired
-    private AdminRepo adminRepo;
 
     @Autowired
     private CustomerRepo customerRepo;
 
-    @Bean
-    @Primary
-    public UserDetailsService adminDetailsService() {
-        return username -> adminRepo.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Admin not found"));
-    }
 
     @Bean
-    public UserDetailsService customerDetailsService() {
+    public UserDetailsService detailsService() {
         return username -> customerRepo.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Customer not found"));
     }
 
     @Bean
-    @Primary
-    public DaoAuthenticationProvider adminAuthenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(adminDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
-
-    @Bean
     public DaoAuthenticationProvider customerAuthenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(customerDetailsService());
+        authProvider.setUserDetailsService(detailsService());
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }

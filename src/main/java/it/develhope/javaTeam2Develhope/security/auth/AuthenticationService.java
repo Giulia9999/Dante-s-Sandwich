@@ -1,47 +1,45 @@
 package it.develhope.javaTeam2Develhope.security.auth;
-
-import it.develhope.javaTeam2Develhope.admin.Admin;
-import it.develhope.javaTeam2Develhope.admin.AdminRepo;
+import it.develhope.javaTeam2Develhope.customer.ConflictException;
 import it.develhope.javaTeam2Develhope.customer.Customer;
-import it.develhope.javaTeam2Develhope.customer.CustomerRepo;
+import it.develhope.javaTeam2Develhope.customer.CustomerService;
 import it.develhope.javaTeam2Develhope.security.configuration.JWTService;
-import it.develhope.javaTeam2Develhope.userRoles.Roles;
-import org.springframework.beans.factory.annotation.Autowired;
+import it.develhope.javaTeam2Develhope.customer.Roles;
+import jakarta.mail.MessagingException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 
 @Service
-public class AuthenticationService {
-    @Autowired
-    private AdminRepo adminRepo;
+public class AuthenticationService{
+    private final CustomerService customerService;
+    private final PasswordEncoder passwordEncoder;
+    private final JWTService jwtService;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private CustomerRepo customerRepo;
+    public AuthenticationService(
+            CustomerService customerService1, PasswordEncoder passwordEncoder,
+            JWTService jwtService,
+            AuthenticationManager authenticationManager
+    ) {
+        this.customerService = customerService1;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+        this.authenticationManager = authenticationManager;
+    }
 
-    @Autowired
-    private JWTService jwtService;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    public AuthenticationResponse registerAdmin(RegisterRequest request) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        Admin admin = new Admin();
-        admin.setFirstname(request.getFirstname());
-        admin.setLastname(request.getLastname());
+    public AuthenticationResponse registerAdmin(RegisterRequest request) throws ConflictException, MessagingException {
+        Customer admin = new Customer();
+        admin.setName(request.getFirstname());
+        admin.setSurname(request.getLastname());
         admin.setUsername(request.getUsername());
         admin.setEmail(request.getEmail());
         admin.setPassword(passwordEncoder.encode(request.getPassword()));
         admin.setRole(Roles.ADMIN);
-        adminRepo.save(admin);
+        customerService.createCustomer(admin);
 
         var jwtToken = jwtService.generateToken(admin);
         return AuthenticationResponse.builder()
@@ -49,7 +47,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponse registerCustomer(RegisterRequest request) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public AuthenticationResponse registerCustomer(RegisterRequest request) throws ConflictException, MessagingException {
         Customer customer = new Customer();
         customer.setName(request.getFirstname());
         customer.setSurname(request.getLastname());
@@ -57,7 +55,7 @@ public class AuthenticationService {
         customer.setEmail(request.getEmail());
         customer.setPassword(passwordEncoder.encode(request.getPassword()));
         customer.setRole(Roles.READER);
-        customerRepo.save(customer);
+        customerService.createCustomer(customer);
 
         var jwtToken = jwtService.generateToken(customer);
         return AuthenticationResponse.builder()
@@ -65,7 +63,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponse authenticateAdmin(AuthenticationRequest request) throws AuthenticationException, NoSuchAlgorithmException, InvalidKeySpecException {
+    public AuthenticationResponse authenticateAdmin(AuthenticationRequest request) throws AuthenticationException{
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
@@ -73,7 +71,7 @@ public class AuthenticationService {
                 )
         );
 
-        var admin = adminRepo.findByUsername(request.getUsername())
+        var admin = customerService.findByUsername(request.getUsername())
                 .orElseThrow(AuthenticationException::new);
 
         var jwtToken = jwtService.generateToken(admin);
@@ -82,7 +80,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponse authenticateCustomer(AuthenticationRequest request) throws AuthenticationException, NoSuchAlgorithmException, InvalidKeySpecException {
+    public AuthenticationResponse authenticateCustomer(AuthenticationRequest request) throws AuthenticationException{
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
@@ -90,7 +88,7 @@ public class AuthenticationService {
                 )
         );
 
-        var customer = customerRepo.findByUsername(request.getUsername())
+        var customer = customerService.findByUsername(request.getUsername())
                 .orElseThrow(AuthenticationException::new);
 
         var jwtToken = jwtService.generateToken(customer);
