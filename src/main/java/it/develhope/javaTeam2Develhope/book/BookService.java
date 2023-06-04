@@ -1,12 +1,10 @@
 package it.develhope.javaTeam2Develhope.book;
 
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import io.micrometer.common.util.StringUtils;
-import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -15,13 +13,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.sound.midi.Soundbank;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -181,36 +175,6 @@ public class BookService {
         }
     }
 
-    /*public ResponseEntity<String> uploadMP3(Long id, MultipartFile mp3) {
-
-        try {
-            Book book = bookRepo.findById(id).orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
-            if (!Objects.equals(mp3.getContentType(), "audio/mpeg")) {
-                throw new IllegalArgumentException("File must be an MP3 type!");
-            }
-            String fileName = mp3.getOriginalFilename();
-            String desiredFolder = "mp3File/";
-            File folder = new File(desiredFolder);
-            if(!folder.exists()){
-                folder.mkdir();
-            }
-            String filePath = desiredFolder + fileName;
-            Path path = Paths.get(filePath);
-            Files.copy(mp3.getInputStream(), path);
-
-            // Salva solo il path nel DB
-            book.setAudible(path.toAbsolutePath().toString());
-            bookRepo.save(book);
-
-            return ResponseEntity.ok("MP3 uploaded correctly! Path saved for future download.");
-
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR during uploading MP3!");
-        } catch (BookNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
-
-    }*/
 
     public ResponseEntity<String> uploadMP3(Long id, MultipartFile mp3) {
         try {
@@ -296,7 +260,7 @@ public class BookService {
 
                 return ResponseEntity.ok().headers(headers).contentLength(file.length()).body(resource);
             } else {
-                throw new BookNotFoundException("MP3 file not found for book with id: " + id);
+                throw new BookNotFoundException("Audible file not found for book with id: " + id);
             }
         } catch (IOException e) {
             throw new IOException("Error during downloading MP3!", e);
