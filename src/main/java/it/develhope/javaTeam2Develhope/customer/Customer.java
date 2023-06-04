@@ -27,7 +27,7 @@ public class Customer implements UserDetails {
     @Enumerated(EnumType.STRING)
     @JsonIgnore
     private Roles role;
-    @NotEmpty(message = "mandatory")
+    @NotBlank(message = "mandatory")
     private String name;
     @NotBlank(message = "mandatory")
     private String surname;

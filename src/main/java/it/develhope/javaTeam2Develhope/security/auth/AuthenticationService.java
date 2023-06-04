@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
+import java.time.LocalDate;
 
 @Service
 public class AuthenticationService{
@@ -41,9 +42,9 @@ public class AuthenticationService{
         admin.setRole(Roles.ADMIN);
         customerService.createCustomer(admin);
 
-        var jwtToken = jwtService.generateToken(admin);
+        /*var jwtToken = jwtService.generateToken(admin);*/
         return AuthenticationResponse.builder()
-                .token(jwtToken)
+                /*.token(jwtToken)*/
                 .build();
     }
 
@@ -54,12 +55,14 @@ public class AuthenticationService{
         customer.setUsername(request.getUsername());
         customer.setEmail(request.getEmail());
         customer.setPassword(passwordEncoder.encode(request.getPassword()));
+        customer.setAddress(request.getAddress());
+        customer.setDateOfSubscription(LocalDate.now());
         customer.setRole(Roles.READER);
         customerService.createCustomer(customer);
 
-        var jwtToken = jwtService.generateToken(customer);
+        /*var jwtToken = jwtService.generateToken(customer);*/
         return AuthenticationResponse.builder()
-                .token(jwtToken)
+                /*.token(jwtToken)*/
                 .build();
     }
 
