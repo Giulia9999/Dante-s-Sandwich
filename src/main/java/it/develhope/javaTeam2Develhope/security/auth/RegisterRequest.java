@@ -23,6 +23,7 @@ public class RegisterRequest {
     private String email;
     @NotBlank(message = "mandatory")
     private String password;
+
     private LocalDate birthday;
     private String address;
 }

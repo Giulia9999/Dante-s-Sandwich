@@ -5,7 +5,6 @@ import it.develhope.javaTeam2Develhope.customer.CustomerService;
 import it.develhope.javaTeam2Develhope.security.configuration.JWTService;
 import it.develhope.javaTeam2Develhope.customer.Roles;
 import jakarta.mail.MessagingException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,7 +32,7 @@ public class AuthenticationService{
         this.authenticationManager = authenticationManager;
     }
 
-    public ResponseEntity<String> registerAdmin(RegisterRequest request) throws ConflictException, MessagingException {
+    public AuthenticationResponse registerAdmin(RegisterRequest request) throws ConflictException, MessagingException {
         Customer admin = new Customer();
         admin.setName(request.getFirstname());
         admin.setSurname(request.getLastname());
@@ -43,14 +42,13 @@ public class AuthenticationService{
         admin.setRole(Roles.ADMIN);
         customerService.createCustomer(admin);
 
-        /*var jwtToken = jwtService.generateToken(admin);*/
-        /*return AuthenticationResponse.builder()
+        var jwtToken = jwtService.generateToken(admin);
+        return AuthenticationResponse.builder()
                 .token(jwtToken)
-                .build();*/
-        return ResponseEntity.ok("Admin registration successfull");
+                .build();
     }
 
-    public ResponseEntity<String> registerCustomer(RegisterRequest request) throws ConflictException, MessagingException {
+    public AuthenticationResponse registerCustomer(RegisterRequest request) throws ConflictException, MessagingException {
         Customer customer = new Customer();
         customer.setName(request.getFirstname());
         customer.setSurname(request.getLastname());
@@ -62,11 +60,10 @@ public class AuthenticationService{
         customer.setRole(Roles.READER);
         customerService.createCustomer(customer);
 
-        /*var jwtToken = jwtService.generateToken(customer);*/
-        /*return AuthenticationResponse.builder()
+        var jwtToken = jwtService.generateToken(customer);
+        return AuthenticationResponse.builder()
                 .token(jwtToken)
-                .build();*/
-        return ResponseEntity.ok("Customer registration successfull");
+                .build();
     }
 
     public AuthenticationResponse authenticateAdmin(AuthenticationRequest request) throws AuthenticationException{

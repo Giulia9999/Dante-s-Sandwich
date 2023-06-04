@@ -281,6 +281,10 @@ public class CustomerService{
         return customerRepo.save(customer);
     }
 
+    public Customer saveCustomer(Customer customer){
+        return customerRepo.save(customer);
+    }
+
     public Customer getCustomerById(Long id) throws Exception {
         Optional<Customer> customerOptional = customerRepo.findById(id);
         return customerOptional.orElse(null);
