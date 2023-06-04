@@ -84,26 +84,26 @@ public class BookController {
 
 
     //UPLOAD PDF
-    @PatchMapping("/uploadPDF/{id}")
+    @PatchMapping("/{id}/PDF")
     public ResponseEntity<String> uploadPDF(@PathVariable Long id, @RequestParam("pdf") MultipartFile pdfFile) {
         return bookService.uploadPDF(id, pdfFile);
 
     }
 
     //UPLOAD MP3
-    @PatchMapping("/uploadMP3/{id}")
+    @PatchMapping("/{id}/audible")
     public ResponseEntity<String> uploadMP3(@PathVariable Long id, @RequestParam("mp3") MultipartFile mp3File) {
         return bookService.uploadMP3(id, mp3File);
     }
 
     //DOWNLOAD PDF
-    @GetMapping("/downloadPDF/{id}")
+    @GetMapping("/{id}/PDF")
     public ResponseEntity<Resource> downloadPDF(@PathVariable Long id) throws BookNotFoundException, IOException {
         return bookService.downloadPDF(id);
     }
 
     //DOWNLOAD MP3
-    @GetMapping("/downloadMP3/{id}")
+    @GetMapping("/{id}/audible")
     public ResponseEntity<Resource> downloadMP3(@PathVariable Long id) throws BookNotFoundException, IOException {
         return bookService.downloadMP3(id);
     }
