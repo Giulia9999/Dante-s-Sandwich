@@ -21,7 +21,7 @@ public class NotificationService {
         helper.setSubject(subject);
         helper.setText(message);
         helper.setTo(email);
-        helper.setFrom("dantessandwich@gmail.com");//da cambiare con la mail di Dante's Sandwich
+        helper.setFrom("dantesandwich3@gmail.com");//da cambiare con la mail di Dante's Sandwich
         javaMailSender.send(mimeMessage);
     }
 
@@ -33,7 +33,7 @@ public class NotificationService {
         helper.setSubject(subject);
         helper.setText(message);
         helper.setTo(email);
-        helper.setFrom("dantessandwich@gmail.com");//da cambiare con la mail di Dante's Sandwich
+        helper.setFrom("dantesandwich3@gmail.com");//da cambiare con la mail di Dante's Sandwich
         javaMailSender.send(mimeMessage);
     }
 
@@ -45,7 +45,7 @@ public class NotificationService {
         helper.setSubject(subject);
         helper.setText(message);
         helper.setTo(email);
-        helper.setFrom("dantessandwich@gmail.com");//da cambiare con la mail di Dante's Sandwich
+        helper.setFrom("dantesandwich3@gmail.com");//da cambiare con la mail di Dante's Sandwich
         javaMailSender.send(mimeMessage);
     }
 
@@ -57,7 +57,7 @@ public class NotificationService {
         helper.setSubject(subject);
         helper.setText(message);
         helper.setTo(email);
-        helper.setFrom("dantessandwich@gmail.com");//da cambiare con la mail di Dante's Sandwich
+        helper.setFrom("dantesandwich3@gmail.com");//da cambiare con la mail di Dante's Sandwich
         javaMailSender.send(mimeMessage);
     }
 
