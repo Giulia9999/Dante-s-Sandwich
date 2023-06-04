@@ -22,7 +22,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/books")
-/*@PreAuthorize("hasRole('ADMIN')")*/
 public class BookController {
     @Autowired
     private BookService bookService;
