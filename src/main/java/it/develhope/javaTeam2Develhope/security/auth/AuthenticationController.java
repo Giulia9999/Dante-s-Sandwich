@@ -23,7 +23,7 @@ public class AuthenticationController {
     @PostMapping("/admin/register")
     public ResponseEntity<AuthenticationResponse> registerAdmin(
             @RequestBody RegisterRequest request
-    ) throws NoSuchAlgorithmException, InvalidKeySpecException, ConflictException, MessagingException {
+    ) throws ConflictException, MessagingException {
         return ResponseEntity.ok(service.registerAdmin(request));
     }
 
@@ -38,14 +38,14 @@ public class AuthenticationController {
     @PostMapping("/customer/register")
     public ResponseEntity<AuthenticationResponse> registerCustomer(
             @RequestBody RegisterRequest request
-    ) throws NoSuchAlgorithmException, InvalidKeySpecException, ConflictException, MessagingException {
+    ) throws ConflictException, MessagingException {
         return ResponseEntity.ok(service.registerCustomer(request));
     }
 
     @PostMapping("/customer/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticateCustomer(
             @RequestBody AuthenticationRequest request
-    ) throws AuthenticationException, NoSuchAlgorithmException, InvalidKeySpecException {
+    ) throws AuthenticationException {
         return ResponseEntity.ok(service.authenticateCustomer(request));
 
     }
