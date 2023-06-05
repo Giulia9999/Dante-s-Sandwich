@@ -2,6 +2,7 @@ package it.develhope.javaTeam2Develhope.security.auth;
 import it.develhope.javaTeam2Develhope.customer.ConflictException;
 import it.develhope.javaTeam2Develhope.customer.Customer;
 import it.develhope.javaTeam2Develhope.customer.CustomerService;
+import it.develhope.javaTeam2Develhope.notifications.NotificationService;
 import it.develhope.javaTeam2Develhope.security.configuration.JWTService;
 import it.develhope.javaTeam2Develhope.customer.Roles;
 import jakarta.mail.MessagingException;
@@ -19,17 +20,19 @@ public class AuthenticationService{
     private final PasswordEncoder passwordEncoder;
     private final JWTService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final NotificationService notificationService;
 
     public AuthenticationService(
             CustomerService customerService1, PasswordEncoder passwordEncoder,
             JWTService jwtService,
-            AuthenticationManager authenticationManager
-    ) {
+            AuthenticationManager authenticationManager,
+            NotificationService notificationService) {
         this.customerService = customerService1;
 
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
+        this.notificationService = notificationService;
     }
 
     public AuthenticationResponse registerAdmin(RegisterRequest request) throws ConflictException, MessagingException {
@@ -40,6 +43,7 @@ public class AuthenticationService{
         admin.setEmail(request.getEmail());
         admin.setPassword(passwordEncoder.encode(request.getPassword()));
         admin.setRole(Roles.ADMIN);
+        notificationService.sendWelcome(admin.getEmail());
         customerService.createCustomer(admin);
 
         var jwtToken = jwtService.generateToken(admin);
@@ -58,6 +62,7 @@ public class AuthenticationService{
         customer.setAddress(request.getAddress());
         customer.setDateOfSubscription(LocalDate.now());
         customer.setRole(Roles.READER);
+        notificationService.sendWelcome(customer.getEmail());
         customerService.createCustomer(customer);
 
         var jwtToken = jwtService.generateToken(customer);
