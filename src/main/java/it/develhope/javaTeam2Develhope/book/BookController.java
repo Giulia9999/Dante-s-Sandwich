@@ -4,8 +4,7 @@ package it.develhope.javaTeam2Develhope.book;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.FileSystemResource;
+
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.*;
@@ -13,11 +12,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
+
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
+
 
 
 @RestController
@@ -85,26 +82,26 @@ public class BookController {
 
 
     //UPLOAD PDF
-    @PatchMapping("/uploadPDF/{id}")
+    @PatchMapping("/{id}/PDF")
     public ResponseEntity<String> uploadPDF(@PathVariable Long id, @RequestParam("pdf") MultipartFile pdfFile) {
         return bookService.uploadPDF(id, pdfFile);
 
     }
 
     //UPLOAD MP3
-    @PatchMapping("/uploadMP3/{id}")
+    @PatchMapping("/{id}/audible")
     public ResponseEntity<String> uploadMP3(@PathVariable Long id, @RequestParam("mp3") MultipartFile mp3File) {
         return bookService.uploadMP3(id, mp3File);
     }
 
     //DOWNLOAD PDF
-    @GetMapping("/downloadPDF/{id}")
+    @GetMapping("/{id}/PDF")
     public ResponseEntity<Resource> downloadPDF(@PathVariable Long id) throws BookNotFoundException, IOException {
         return bookService.downloadPDF(id);
     }
 
     //DOWNLOAD MP3
-    @GetMapping("/downloadMP3/{id}")
+    @GetMapping("/{id}/audible")
     public ResponseEntity<Resource> downloadMP3(@PathVariable Long id) throws BookNotFoundException, IOException {
         return bookService.downloadMP3(id);
     }

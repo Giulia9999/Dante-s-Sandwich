@@ -22,6 +22,14 @@ public class SpringDocConfig {
                         .contact(new Contact()
                                 .name("Dante's Sandwich")
                                 .email("dantesandwich23@gmail.com")
-                                .url("https://www.dantesandwich.it")));
+                                .url("https://www.dantesandwich.it"))).tags(List.of(new Tag().name("customer-controller").description("Customer Controller"),
+                                new Tag().name("book-controller").description("Book Controller"),
+                                new Tag().name("cart-controller").description("Cart Controller"),
+                                new Tag().name("customer-history-controller").description("Customer History Controller"),
+                                new Tag().name("digital-purchase-controller").description("Digital Purchase Controller"),
+                                new Tag().name("order-controller").description("Order Controller"),
+                                new Tag().name("payment-card-controller").description("Payment Card Controller"),
+                                new Tag().name("subscription-controller").description("Subscription Controller")
+        ));
     }
 }
