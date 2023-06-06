@@ -36,7 +36,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 @Service
-public class CustomerService {
+public class CustomerService{
     private final CustomerRepo customerRepo;
     private final PaymentCardService paymentCardService;
     private final DigitalPurchaseService digitalPurchaseService;
@@ -277,11 +277,11 @@ public class CustomerService {
         if (existingCustomer.isPresent()) {
             throw new ConflictException("A customer with this email already exists");
         }
-        String passwordSalt = generatePasswordSalt();
-        String passwordHash = generatePasswordHash(customer.getPassword(), passwordSalt);
-        customer.setPasswordSalt(passwordSalt);
-        customer.setPasswordHash(passwordHash);
         notificationService.sendWelcome(customer.getEmail());
+        return customerRepo.save(customer);
+    }
+
+    public Customer saveCustomer(Customer customer){
         return customerRepo.save(customer);
     }
 
@@ -329,7 +329,12 @@ public class CustomerService {
         return true;
     }
 
-    private String generatePasswordSalt() {
+
+    public Optional<Customer> findByUsername(String username) {
+        return customerRepo.findByUsername(username);
+    }
+
+    /*private String generatePasswordSalt() {
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
         random.nextBytes(salt);
@@ -353,7 +358,7 @@ public class CustomerService {
             e.printStackTrace();
             return null;
         }
-    }
+    }*/
 
 }
 

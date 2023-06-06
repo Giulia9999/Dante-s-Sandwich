@@ -125,6 +125,8 @@ public class CustomerController {
 
   //-----------------------METODI CRUD----------------------
 
+
+  @Deprecated
   @PostMapping("/single")
   public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) throws Exception, ConflictException {
     Customer savedCustomer = customerService.createCustomer(customer);
