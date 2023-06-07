@@ -161,6 +161,7 @@ public class CustomerService{
         order.setCustomerCard(customerCard);
         order.setBook(book);
         order.setDateOfOrder(LocalDateTime.from(LocalDateTime.now()));
+        order.setAddress(customerCard.getCustomer().getAddress());
         order.setDateOfShipping(LocalDateTime.now().plusDays(1).toLocalDate());
         order.setDateOfArrival(order.getDateOfShipping().plusDays(2));
         order.setDetails("Ordine effettuato");

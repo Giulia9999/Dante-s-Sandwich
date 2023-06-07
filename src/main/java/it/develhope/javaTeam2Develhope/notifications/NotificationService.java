@@ -7,17 +7,33 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class NotificationService {
 
     @Autowired
     JavaMailSender javaMailSender;
+    @Autowired
+    AuthCode authCode;
 
     public void sendWelcome(String email) throws MessagingException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
         String subject = "Welcome to Dante's Sandwich!";
         String message = "Dear customer, we give you a great welcome to Dante's Sandwich! Discover all our purchase possibilities! Best regards from Dante's Sandwich Team";
+        helper.setSubject(subject);
+        helper.setText(message);
+        helper.setTo(email);
+        helper.setFrom("alessio.limina90@gmail.com");//da cambiare con la mail di Dante's Sandwich
+        javaMailSender.send(mimeMessage);
+    }
+
+    public void sendAuthCode(String email) throws MessagingException {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+        String subject = "Authentication code";
+        String message = "Insert the code in the authentication: " + authCode.getCode();
         helper.setSubject(subject);
         helper.setText(message);
         helper.setTo(email);
