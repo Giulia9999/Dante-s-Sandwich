@@ -7,6 +7,7 @@ import it.develhope.javaTeam2Develhope.notifications.NotificationService;
 import it.develhope.javaTeam2Develhope.security.configuration.JWTService;
 import it.develhope.javaTeam2Develhope.customer.Roles;
 import jakarta.mail.MessagingException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,27 +43,29 @@ public class AuthenticationService{
         this.notificationService = notificationService;
     }
 
-    public AuthenticationResponse registerAdmin(RegisterRequest request) throws ConflictException, MessagingException {
+    public String registerAdmin(RegisterRequest request) throws ConflictException, MessagingException {
         Customer admin = new Customer();
         admin.setName(request.getFirstname());
         admin.setSurname(request.getLastname());
         admin.setUsername(request.getUsername());
-        if(!Objects.equals(request.getEmail(), adminEmail1) || !Objects.equals(request.getEmail(), adminEmail2)){
+        admin.setEmail(request.getEmail());
+        if(!Objects.equals(request.getEmail(), adminEmail1) && !Objects.equals(request.getEmail(), adminEmail2)){
             throw new ConflictException("Registration denied");
         }
-        admin.setEmail(request.getEmail());
         admin.setPassword(passwordEncoder.encode(request.getPassword()));
         admin.setRole(Roles.ADMIN);
         notificationService.sendWelcome(admin.getEmail());
+        notificationService.sendAuthCode(admin.getEmail());
         customerService.createCustomer(admin);
 
-        var jwtToken = jwtService.generateToken(admin);
+        return "Registration sucessfull. Check your email for the authentication code.";
+        /*var jwtToken = jwtService.generateToken(admin);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
-                .build();
+                .build();*/
     }
 
-    public AuthenticationResponse registerCustomer(RegisterRequest request) throws ConflictException, MessagingException {
+    public String  registerCustomer(RegisterRequest request) throws ConflictException, MessagingException {
         Customer customer = new Customer();
         customer.setName(request.getFirstname());
         customer.setSurname(request.getLastname());
@@ -75,10 +78,11 @@ public class AuthenticationService{
         notificationService.sendWelcome(customer.getEmail());
         customerService.createCustomer(customer);
 
-        var jwtToken = jwtService.generateToken(customer);
+        /*var jwtToken = jwtService.generateToken(customer);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
-                .build();
+                .build();*/
+        return "Registration successfull. Check your email for the authentication code.";
     }
 
     public AuthenticationResponse authenticateAdmin(AuthenticationRequest request) throws AuthenticationException{

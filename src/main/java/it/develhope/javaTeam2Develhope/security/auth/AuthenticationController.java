@@ -19,7 +19,7 @@ public class AuthenticationController {
     private final AuthenticationService service;
 
     @PostMapping("/admin/register")
-    public ResponseEntity<AuthenticationResponse> registerAdmin(
+    public ResponseEntity<String> registerAdmin(
             @RequestBody RegisterRequest request
     ) throws ConflictException, MessagingException {
         return ResponseEntity.ok(service.registerAdmin(request));
@@ -35,7 +35,7 @@ public class AuthenticationController {
 
 
     @PostMapping("/customer/register")
-    public ResponseEntity<AuthenticationResponse> registerCustomer(
+    public ResponseEntity<String> registerCustomer(
             @RequestBody RegisterRequest request
     ) throws ConflictException, MessagingException {
         return ResponseEntity.ok(service.registerCustomer(request));
