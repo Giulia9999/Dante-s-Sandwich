@@ -23,9 +23,11 @@ public class Order {
     private Long id;
     private double weight;
     private LocalDateTime dateOfOrder;
+    private String address;
     private LocalDate dateOfShipping;
     private LocalDate dateOfArrival;
     private String details;
+    private Boolean isGift;
     @NotNull
     private float totalPrice;
     @OneToOne
