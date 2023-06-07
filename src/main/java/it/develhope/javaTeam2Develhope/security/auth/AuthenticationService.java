@@ -7,7 +7,7 @@ import it.develhope.javaTeam2Develhope.notifications.NotificationService;
 import it.develhope.javaTeam2Develhope.security.configuration.JWTService;
 import it.develhope.javaTeam2Develhope.customer.Roles;
 import jakarta.mail.MessagingException;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,8 +19,8 @@ import java.util.Objects;
 
 @Service
 public class AuthenticationService{
-    private static final String adminEmail1 = "alessio.limina90@gmail.com";
-    private static final String adminEmail2 = "maxpower88999@gmail.com";
+    private final String adminEmail1;
+    private final String adminEmail2;
 
     private final AuthCode authCode;
     private final CustomerService customerService;
@@ -30,10 +30,13 @@ public class AuthenticationService{
     private final NotificationService notificationService;
 
     public AuthenticationService(
-            AuthCode authCode, CustomerService customerService1, PasswordEncoder passwordEncoder,
-            JWTService jwtService,
+            @Value("${adminEmail1}") String adminEmail1, @Value("${adminEmail2}") String adminEmail2,
+            AuthCode authCode, CustomerService customerService1,
+            PasswordEncoder passwordEncoder, JWTService jwtService,
             AuthenticationManager authenticationManager,
             NotificationService notificationService) {
+        this.adminEmail1 = adminEmail1;
+        this.adminEmail2 = adminEmail2;
         this.authCode = authCode;
         this.customerService = customerService1;
 
