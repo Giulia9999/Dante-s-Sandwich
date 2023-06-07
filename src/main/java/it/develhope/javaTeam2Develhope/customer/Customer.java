@@ -42,6 +42,8 @@ public class Customer implements UserDetails {
     private LocalDate birthday;
     private String address;
     private LocalDate dateOfSubscription;
+    @JsonIgnore
+    private String authCode;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

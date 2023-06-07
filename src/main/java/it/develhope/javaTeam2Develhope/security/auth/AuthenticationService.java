@@ -2,6 +2,7 @@ package it.develhope.javaTeam2Develhope.security.auth;
 import it.develhope.javaTeam2Develhope.customer.ConflictException;
 import it.develhope.javaTeam2Develhope.customer.Customer;
 import it.develhope.javaTeam2Develhope.customer.CustomerService;
+import it.develhope.javaTeam2Develhope.notifications.AuthCode;
 import it.develhope.javaTeam2Develhope.notifications.NotificationService;
 import it.develhope.javaTeam2Develhope.security.configuration.JWTService;
 import it.develhope.javaTeam2Develhope.customer.Roles;
@@ -13,9 +14,14 @@ import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Service
 public class AuthenticationService{
+    private static final String adminEmail1 = "alessio.limina90@gmail.com";
+    private static final String adminEmail2 = "maxpower88999@gmail.com";
+
+    private final AuthCode authCode;
     private final CustomerService customerService;
     private final PasswordEncoder passwordEncoder;
     private final JWTService jwtService;
@@ -23,10 +29,11 @@ public class AuthenticationService{
     private final NotificationService notificationService;
 
     public AuthenticationService(
-            CustomerService customerService1, PasswordEncoder passwordEncoder,
+            AuthCode authCode, CustomerService customerService1, PasswordEncoder passwordEncoder,
             JWTService jwtService,
             AuthenticationManager authenticationManager,
             NotificationService notificationService) {
+        this.authCode = authCode;
         this.customerService = customerService1;
 
         this.passwordEncoder = passwordEncoder;
@@ -40,6 +47,9 @@ public class AuthenticationService{
         admin.setName(request.getFirstname());
         admin.setSurname(request.getLastname());
         admin.setUsername(request.getUsername());
+        if(!Objects.equals(request.getEmail(), adminEmail1) || !Objects.equals(request.getEmail(), adminEmail2)){
+            throw new ConflictException("Registration denied");
+        }
         admin.setEmail(request.getEmail());
         admin.setPassword(passwordEncoder.encode(request.getPassword()));
         admin.setRole(Roles.ADMIN);
@@ -72,12 +82,16 @@ public class AuthenticationService{
     }
 
     public AuthenticationResponse authenticateAdmin(AuthenticationRequest request) throws AuthenticationException{
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
-        );
+        if(request.getAuthCode().equals(authCode.getCode())){
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(),
+                            request.getPassword()
+                    )
+            );
+        }else {
+            throw new AuthenticationException("Authentication denied");
+        }
 
         var admin = customerService.findByUsername(request.getUsername())
                 .orElseThrow(AuthenticationException::new);
@@ -104,4 +118,5 @@ public class AuthenticationService{
                 .token(jwtToken)
                 .build();
     }
+
 }
