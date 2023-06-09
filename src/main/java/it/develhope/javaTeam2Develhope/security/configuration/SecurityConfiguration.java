@@ -43,4 +43,19 @@ public class SecurityConfiguration {
         return httpSecurity.build();
     }
 
+    // Usate questo bean se volete disattivare la security
+    /*
+    @Bean
+    public SecurityFilterChain securityFilterChainDisable(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(authorize->authorize
+                        .anyRequest()
+                        .permitAll())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        return httpSecurity.build();
+    }
+    */
+
 }
