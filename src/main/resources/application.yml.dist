@@ -3,15 +3,16 @@ server:
 ---
 spring:
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/DanteDB
+    url: jdbc:mysql://127.0.0.1:3306/ProjectDatabase
     username: root
-    password: Sql123.
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: c620918fazuKl420
   jpa:
     database: mysql
-    show_sql: true
+    show-sql: true
+    generate-ddl: true
     hibernate:
-      ddl_auto: create-drop
+      ddl-auto: create-drop
+      globally_quoted_identifiers: true
   servlet:
     multipart:
       max-file-size: 128MB
@@ -20,7 +21,7 @@ spring:
     host: smtp.sendgrid.net
     port: 587
     username: apikey
-    password: *
+    password: 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
     protocol: smtp
     properties:
       mail:
@@ -39,7 +40,15 @@ application:
       refresh-token:
         expiration: 604800000 # 7 days
 
+adminEmail1: alessio.limina90@gmail.com
+adminEmail2: maxpower88999@gmail.com
+adminEmail3: eduard.prog22@gmail.com
 
+openai:
+  model: text-davinci-003
+  api:
+    key: apikey
+    url: apeanaiurl
 
     email: dantessandwich@gmail.com
 
