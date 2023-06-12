@@ -21,6 +21,7 @@ import java.util.Objects;
 public class AuthenticationService{
     private final String adminEmail1;
     private final String adminEmail2;
+    private final String adminEmail3;
 
     private final AuthCode authCode;
     private final CustomerService customerService;
@@ -31,12 +32,13 @@ public class AuthenticationService{
 
     public AuthenticationService(
             @Value("${adminEmail1}") String adminEmail1, @Value("${adminEmail2}") String adminEmail2,
-            AuthCode authCode, CustomerService customerService1,
+            @Value("${adminEmail3}") String adminEmail3, AuthCode authCode, CustomerService customerService1,
             PasswordEncoder passwordEncoder, JWTService jwtService,
             AuthenticationManager authenticationManager,
             NotificationService notificationService) {
         this.adminEmail1 = adminEmail1;
         this.adminEmail2 = adminEmail2;
+        this.adminEmail3 = adminEmail3;
         this.authCode = authCode;
         this.customerService = customerService1;
 
@@ -52,7 +54,9 @@ public class AuthenticationService{
         admin.setSurname(request.getLastname());
         admin.setUsername(request.getUsername());
         admin.setEmail(request.getEmail());
-        if(!Objects.equals(request.getEmail(), adminEmail1) && !Objects.equals(request.getEmail(), adminEmail2)){
+        if(!Objects.equals(request.getEmail(), adminEmail1)
+                && !Objects.equals(request.getEmail(), adminEmail2)
+        && !Objects.equals(request.getEmail(), adminEmail3)){
             throw new ConflictException("Registration denied");
         }
         admin.setPassword(passwordEncoder.encode(request.getPassword()));
