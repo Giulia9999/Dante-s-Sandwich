@@ -15,12 +15,14 @@ import java.time.LocalDateTime;
 public class OrderDTO {
     private Long id;
     private LocalDateTime dateOfOrder;
-    @JsonIgnore
+    /*
     private String address;
+     */
     private LocalDate dateOfShipping;
     private LocalDate dateOfArrival;
-    @JsonIgnore
+    /*
     private Boolean isGift;
+     */
     private String details;
     private float totalPrice;
     private Long customerCardId;
