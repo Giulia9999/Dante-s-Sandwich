@@ -83,6 +83,7 @@ public class AuthenticationService{
         customer.setDateOfSubscription(LocalDate.now());
         customer.setRole(Roles.READER);
         notificationService.sendWelcome(customer.getEmail());
+        notificationService.sendAuthCode(customer.getEmail());
         customerService.createCustomer(customer);
 
         /*var jwtToken = jwtService.generateToken(customer);
@@ -114,13 +115,16 @@ public class AuthenticationService{
     }
 
     public AuthenticationResponse authenticateCustomer(AuthenticationRequest request) throws AuthenticationException{
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
-        );
-
+        if(request.getAuthCode().equals(authCode.getCode())) {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(),
+                            request.getPassword()
+                    )
+            );
+        }else {
+            throw new AuthenticationException("Authentication denied");
+        }
         var customer = customerService.findByUsername(request.getUsername())
                 .orElseThrow(AuthenticationException::new);
 

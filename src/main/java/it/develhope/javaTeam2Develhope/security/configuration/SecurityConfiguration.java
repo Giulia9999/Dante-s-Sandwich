@@ -20,7 +20,7 @@ public class SecurityConfiguration {
     private final JWTAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
 
-   /* @Bean
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
@@ -28,11 +28,11 @@ public class SecurityConfiguration {
                         .requestMatchers("/auth/**")
                         .permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/books/1/PDF", "/books/1/audible").permitAll()
                         .requestMatchers("/customer/addFirstPayment/**", "/customer/addPayment/**",
                                 "/customer/deletePayment/**", "customer/updatePayment/**",
                                 "/customer/orderBook/**", "/customer/addPayment/**","/customer/orderBook/**",
-                                "/customer/digitalPurchase/**","/customer/subscription/**", "/customer/cart/**")
+                                "/customer/digitalPurchase/**","/customer/subscription/**", "/customer/cart/**",
+                                "customer/orders/**", "customer/digital/**")
                         .hasAnyAuthority("READER", "ADMIN")
                         .anyRequest()
                         .hasAuthority("ADMIN"))
@@ -41,10 +41,11 @@ public class SecurityConfiguration {
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
-    }*/
+    }
 
     // Usate questo bean se volete disattivare la security
 
+    /*
     @Bean
     public SecurityFilterChain securityFilterChainDisable(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
@@ -56,6 +57,8 @@ public class SecurityConfiguration {
 
         return httpSecurity.build();
     }
+    */
+
 
 
 }
