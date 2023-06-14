@@ -153,21 +153,24 @@ public class BookService {
             String originalFileName = pdf.getOriginalFilename();
             assert originalFileName != null;
             String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
-            String randomFileName = UUID.randomUUID() + fileExtension;
+            String randomFileName = book.getTitle() + fileExtension;
             String desiredFolder = "pdfFile/";
-            File folder = new File(desiredFolder);
-            if (!folder.exists()) {
-                folder.mkdir();
+            Path folder = Paths.get(desiredFolder);
+            if (!Files.exists(folder)) {
+                Files.createDirectories(folder);
             }
             String filePath = desiredFolder + randomFileName;
             Path path = Paths.get(filePath);
+            if (Files.exists(path)) {
+                Files.delete(path);
+            }
             Files.copy(pdf.getInputStream(), path);
-            System.out.println("File saved at:" + path.toAbsolutePath().toString());
 
-            book.setEBook(path.toAbsolutePath().toString());
+            book.setEBook(filePath);
             bookRepo.save(book);
+            System.out.println(book);
 
-            return ResponseEntity.ok("PDF uploaded correctly!");
+            return ResponseEntity.ok("PDF uploaded correctly! Path saved for future download.");
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR during uploading PDF!");
         } catch (BookNotFoundException e) {
@@ -185,22 +188,23 @@ public class BookService {
             String originalFileName = mp3.getOriginalFilename();
             assert originalFileName != null;
             String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
-            String randomFileName = UUID.randomUUID() + fileExtension;
+            String fileName = book.getTitle() + fileExtension;
             String desiredFolder = "mp3File/";
             Path folderPath = Paths.get(desiredFolder);
             if (!Files.exists(folderPath)) {
                 Files.createDirectories(folderPath);
             }
-            String filePath = desiredFolder + randomFileName;
+            String filePath = desiredFolder + fileName;
             Path path = Paths.get(filePath);
             if (Files.exists(path)) {
-                Files.delete(path); // Delete the existing file
+                Files.delete(path);
             }
             Files.copy(mp3.getInputStream(), path);
 
-            // Save only the path in the DB
-            book.setAudible(path.toAbsolutePath().toString());
+            // Save only the relative path in the DB
+            book.setAudible(filePath);
             bookRepo.save(book);
+            System.out.println(book);
 
             return ResponseEntity.ok("MP3 uploaded correctly! Path saved for future download.");
         } catch (IOException e) {
