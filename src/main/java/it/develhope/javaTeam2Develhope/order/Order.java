@@ -23,10 +23,12 @@ public class Order {
     private Long id;
     private double weight;
     private LocalDateTime dateOfOrder;
+    @JsonIgnore
     private String address;
     private LocalDate dateOfShipping;
     private LocalDate dateOfArrival;
     private String details;
+    @JsonIgnore
     private Boolean isGift;
     @NotNull
     private float totalPrice;
