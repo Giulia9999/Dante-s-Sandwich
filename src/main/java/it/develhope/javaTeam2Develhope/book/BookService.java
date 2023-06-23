@@ -168,7 +168,6 @@ public class BookService {
 
             book.setEBook(filePath);
             bookRepo.save(book);
-            System.out.println(book);
 
             return ResponseEntity.ok("PDF uploaded correctly! Path saved for future download.");
         } catch (IOException e) {
@@ -204,7 +203,6 @@ public class BookService {
             // Save only the relative path in the DB
             book.setAudible(filePath);
             bookRepo.save(book);
-            System.out.println(book);
 
             return ResponseEntity.ok("MP3 uploaded correctly! Path saved for future download.");
         } catch (IOException e) {
@@ -236,6 +234,7 @@ public class BookService {
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName());
+                headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PDF_VALUE);
 
                 return ResponseEntity.ok().headers(headers).contentLength(file.length()).body(resource);
             } else {
