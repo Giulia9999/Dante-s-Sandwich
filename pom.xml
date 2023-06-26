@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>it.develhope</groupId>
 	<artifactId>javaTeam-2Develhope</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.6</version>
 	<name>javaTeam-2Develhope</name>
 	<description>javaTeam-2Develhope</description>
 	<properties>
