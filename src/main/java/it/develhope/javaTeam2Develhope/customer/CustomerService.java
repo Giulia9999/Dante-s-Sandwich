@@ -273,12 +273,13 @@ public class CustomerService{
 
 
     //---------------------METODI CRUD---------------------
+    @Deprecated
     public Customer createCustomer(Customer customer) throws ConflictException, MessagingException {
         Optional<Customer> existingCustomer = Optional.ofNullable(customerRepo.findByEmail(customer.getEmail()));
         if (existingCustomer.isPresent()) {
             throw new ConflictException("A customer with this email already exists");
         }
-        notificationService.sendWelcome(customer.getEmail());
+        /*notificationService.sendWelcome(customer.getEmail());*/
         return customerRepo.save(customer);
     }
 
